@@ -1,22 +1,20 @@
 package net.panelpi.controllers
 
-import net.panelpi.DuetWifi
 import javafx.beans.property.SimpleObjectProperty
+import net.panelpi.DuetData
+import net.panelpi.DuetWifi
 import tornadofx.*
 import kotlin.concurrent.timer
 
 class PanelPiController : Controller() {
     val duet = DuetWifi()
 
-    val duetData = SimpleObjectProperty(duet.getData())
+    val duetData = SimpleObjectProperty<DuetData>()
 
     init {
-        println("controller created")
-
-        timer(period = 1000) {
+        timer(period = 1000, initialDelay = 1000) {
             runLater { duetData.set(duet.getData()) }
         }
-
     }
 
 /*    private val report by lazy {

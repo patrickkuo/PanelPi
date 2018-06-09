@@ -3,6 +3,7 @@ package net.panelpi
 import tornadofx.*
 import java.lang.reflect.InvocationTargetException
 import java.net.Proxy
+import javax.json.Json
 import javax.json.JsonNumber
 import javax.json.JsonObject
 import kotlin.reflect.KClass
@@ -57,18 +58,27 @@ private fun JsonObject.getCollectionValue(path: String, type: KType): Collection
     if (!containsKey(path)) {
         return if (typeClass == List::class) emptyList() else emptySet()
     }
-    val values: List<Any> = when (elementClass) {
-        String::class -> getJsonArray(path).getValuesAs<String, JsonObject> { it.getString() }
-        Int::class -> getJsonArray(path).getValuesAs<Int, JsonNumber> { it.intValue() }
-        Long::class -> getJsonArray(path).getValuesAs<Long, JsonNumber> { it.longValue() }
-        Double::class -> getJsonArray(path).getValuesAs<Double, JsonNumber> { it.doubleValue() }
-        Boolean::class -> getJsonArray(path).getValuesAs<Boolean, JsonNumber> { it.intValue() == 1 }
-        else -> if (elementClass.java.isEnum) {
-            getJsonArray(path).map { parseEnum(elementClass.java, it.asJsonObject().getString()) }
-        } else {
-            getJsonArray(path).map { it.asJsonObject().parseAs(elementClass) }
+    val values: List<Any> = try {
+        val array = getJsonArray(path)
+        when (elementClass) {
+            String::class -> array.getValuesAs<String, JsonObject> { it.getString() }
+            Int::class -> array.getValuesAs<Int, JsonNumber> { it.intValue() }
+            Long::class -> array.getValuesAs<Long, JsonNumber> { it.longValue() }
+            Double::class -> array.getValuesAs<Double, JsonNumber> { it.doubleValue() }
+            Boolean::class -> array.getValuesAs<Boolean, JsonNumber> { it.intValue() == 1 }
+            List::class -> array.map { Json.createObjectBuilder().add("array", it).build().getCollectionValue("array", type.arguments.first().type!!) }
+            else -> if (elementClass.java.isEnum) {
+                array.map { parseEnum(elementClass.java, it.asJsonObject().getString()) }
+            } else {
+                array.map { it.asJsonObject().parseAs(elementClass) }
+            }
         }
+    } catch (e: Throwable) {
+        // TODO: logger.
+        println("Error parsing property $path")
+        throw e
     }
+
     return if (typeClass == Set::class) values.toSet() else values
 }
 

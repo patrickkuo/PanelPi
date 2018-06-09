@@ -53,12 +53,12 @@
     -fx-padding: 0 25 0 25;
 }
 
-.on-off-button.success {
+.on-off-button.success, .extrude-retract.normal {
     -fx-background-radius: 4 0 0 4;
     -fx-border-radius: 4 0 0 4;
 }
 
-.on-off-button.danger {
+.on-off-button.danger, .extrude-retract.primary {
     -fx-background-radius: 0 4 4 0;
     -fx-border-radius: 0 4 4 0;
 }
@@ -80,21 +80,30 @@
     -fx-pref-width: 120;
 }
 
-.extrude-retract.primary {
-    -fx-background-radius: 0 0 4 4;
-    -fx-border-radius: 0 0 4 4;
-}
-
-.extrude-retract.primary > .glyph-icon{
+.extrude-retract.primary > .glyph-icon {
     -fx-text-fill: white;
     -fx-fill: white;
 }
 
-.extrude-retract.normal {
-    -fx-background-radius: 4 4 0 0;
-    -fx-border-radius: 4 4 0 0;
-}
-
-.fixWidth{
+.fixWidth {
     -fx-pref-width: 100;
 }
+
+.bold.label {
+    -fx-font-weight: bolder;
+    -fx-text-fill: #428bca;
+    -fx-font-size: 15;
+}
+
+.red.label {
+    -fx-text-fill: red;
+}
+
+.green.label {
+    -fx-text-fill: green;
+}
+
+.blue.label {
+    -fx-text-fill: blue;
+}
+

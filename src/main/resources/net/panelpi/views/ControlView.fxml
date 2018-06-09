@@ -16,15 +16,31 @@
                 <Label GridPane.halignment="CENTER" GridPane.fillWidth="true">Heaters</Label>
             </GridPane>
         </graphic>
-        <TableView>
-            <columns>
-                <TableColumn text="Tool"/>
-                <TableColumn text="Heater"/>
-                <TableColumn text="Current"/>
-                <TableColumn text="Active"/>
-                <TableColumn text="Standby"/>
-            </columns>
-        </TableView>
+        <GridPane hgap="15" vgap="10">
+            <Label GridPane.columnIndex="2" GridPane.halignment="CENTER" styleClass="bold">Tool</Label>
+            <Label GridPane.columnIndex="1" GridPane.halignment="CENTER" styleClass="bold">Bed</Label>
+            <Label GridPane.rowIndex="1" GridPane.halignment="RIGHT" styleClass="bold">Current</Label>
+            <Label GridPane.rowIndex="2" GridPane.halignment="RIGHT" styleClass="bold">Active</Label>
+            <Label GridPane.rowIndex="3" GridPane.halignment="RIGHT" styleClass="bold">Standby</Label>
+
+            <Label fx:id="toolTemp" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.halignment="CENTER">0°C
+            </Label>
+            <Label fx:id="bedTemp" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="CENTER">0°C
+            </Label>
+
+            <ComboBox fx:id="bedActiveTemp" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="CENTER"/>
+            <ComboBox fx:id="toolActiveTemp" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.halignment="CENTER"/>
+            <ComboBox fx:id="toolStandbyTemp" GridPane.columnIndex="2" GridPane.rowIndex="3" GridPane.halignment="CENTER"/>
+
+            <HBox GridPane.rowIndex="4" GridPane.columnSpan="3" spacing="10" alignment="CENTER_LEFT">
+                <Label styleClass="bold, red">X</Label>
+                <Label fx:id="xCoord"/>
+                <Label styleClass="bold, green">Y</Label>
+                <Label fx:id="yCoord"/>
+                <Label styleClass="bold, blue">Z</Label>
+                <Label fx:id="zCoord"/>
+            </HBox>
+        </GridPane>
     </TitledPane>
 
     <TitledPane collapsible="false" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
@@ -96,26 +112,26 @@
                 <Label GridPane.halignment="CENTER" GridPane.fillWidth="true">Extruder</Label>
             </GridPane>
         </graphic>
-        <GridPane hgap="10" vgap="20">
+        <GridPane hgap="10" vgap="10">
             <Label>Feed Amount :</Label>
-            <ComboBox GridPane.columnIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" maxWidth="Infinity"/>
+            <ComboBox fx:id="feedAmountCB" GridPane.columnIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" maxWidth="Infinity"/>
             <Label GridPane.rowIndex="1">Feed Rate :</Label>
-            <ComboBox GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
-            <VBox GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+            <ComboBox  fx:id="feedRateCB" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
+            <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
                   alignment="CENTER">
-                <Button styleClass="extrude-retract, normal" focusTraversable="false">
+                <Button fx:id="retract" styleClass="extrude-retract, normal" focusTraversable="false">
                     <graphic>
                         <FontAwesomeIconView glyphName="ARROW_UP"/>
                     </graphic>
                     Retract
                 </Button>
-                <Button styleClass="extrude-retract, primary" focusTraversable="false">
+                <Button fx:id="extrude" styleClass="extrude-retract, primary" focusTraversable="false">
                     <graphic>
                         <FontAwesomeIconView glyphName="ARROW_DOWN"/>
                     </graphic>
                     Extrude
                 </Button>
-            </VBox>
+            </HBox>
 
         </GridPane>
     </TitledPane>

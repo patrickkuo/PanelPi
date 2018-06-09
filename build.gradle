@@ -27,10 +27,10 @@ repositories {
 sourceSets {
     main {
         kotlin {
-            srcDirs= ["src/main/kotlin"]
+            srcDirs = ["src/main/kotlin"]
         }
         resources {
-            srcDirs= ["src/main/resources"]
+            srcDirs = ["src/main/resources"]
         }
     }
 }
@@ -69,9 +69,9 @@ task fatJar(type: Jar) {
 
 remotes {
     pi {
-        host = 'panelpi.local'
+        host = 'panelpi'
         user = 'pi'
-        identity = file('~/.ssh/id_rsa')
+        identity = file("${System.getProperty("user.home")}/.ssh/id_rsa")
     }
 }
 
