@@ -1,0 +1,100 @@
+.printerStatus.label {
+    -fx-label-padding: 2 10 2 10;
+    -fx-background-radius: 3;
+    -fx-text-fill: white;
+    -fx-background-color: silver;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.menu-icon {
+    -fx-padding: 10 10 10 10;
+    -fx-background-color: #f4f4f4;
+}
+
+.menu-icon-selected {
+    -fx-background-color: #428bca;
+}
+
+.menu-icon > .glyph-icon {
+    -fx-text-fill: #428bca;
+    -fx-fill: #428bca;
+    -glyph-size: 30px;
+}
+
+.menu-icon-selected > .glyph-icon {
+    -fx-text-fill: white;
+    -fx-fill: white;
+    -glyph-size: 30px;
+}
+
+.menu-icon.glyph-icon:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 4, 0, 0, 0);
+}
+
+.machine-name {
+    -fx-text-fill: silver;
+    -fx-font-size: 20;
+}
+
+.menu {
+    -fx-border-color: silver;
+    -fx-border-width: 0 0 1 0;
+}
+
+.button.danger > .glyph-icon {
+    -glyph-size: 20px;
+    -fx-fill: white;
+}
+
+.on-off-button {
+    -fx-padding: 0 25 0 25;
+}
+
+.on-off-button.success {
+    -fx-background-radius: 4 0 0 4;
+    -fx-border-radius: 4 0 0 4;
+}
+
+.on-off-button.danger {
+    -fx-background-radius: 0 4 4 0;
+    -fx-border-radius: 0 4 4 0;
+}
+
+.small.button, .small > .label {
+    -fx-max-height: 10;
+    -fx-font-size: 10;
+}
+
+.small-pane {
+    -fx-padding: 0 0 -15 0;
+}
+
+.titled-pane > .title {
+    -fx-pref-height: 25.0;
+}
+
+.extrude-retract {
+    -fx-pref-width: 120;
+}
+
+.extrude-retract.primary {
+    -fx-background-radius: 0 0 4 4;
+    -fx-border-radius: 0 0 4 4;
+}
+
+.extrude-retract.primary > .glyph-icon{
+    -fx-text-fill: white;
+    -fx-fill: white;
+}
+
+.extrude-retract.normal {
+    -fx-background-radius: 4 4 0 0;
+    -fx-border-radius: 4 4 0 0;
+}
+
+.fixWidth{
+    -fx-pref-width: 100;
+}

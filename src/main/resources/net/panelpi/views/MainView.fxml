@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane prefHeight="480.0" prefWidth="800.0" stylesheets="@../css/PanelPi.css, @../css/bootstrap3.css"
+            xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+    <center>
+        <BorderPane fx:id="centerPane"/>
+    </center>
+
+    <top>
+        <GridPane styleClass="menu">
+            <padding>
+                <Insets right="10"/>
+            </padding>
+            <Label fx:id="controlButton" styleClass="menu-icon" GridPane.columnIndex="0">
+                <graphic>
+                    <FontAwesomeIconView glyphName="HOME"/>
+                </graphic>
+            </Label>
+            <Label fx:id="statusButton" styleClass="menu-icon" GridPane.columnIndex="1">
+                <graphic>
+                    <FontAwesomeIconView glyphName="PRINT"/>
+                </graphic>
+            </Label>
+            <Label fx:id="consoleButton" styleClass="menu-icon" GridPane.columnIndex="2">
+                <graphic>
+                    <FontAwesomeIconView glyphName="TERMINAL"/>
+                </graphic>
+            </Label>
+            <Label fx:id="fileButton" styleClass="menu-icon" GridPane.columnIndex="3">
+                <graphic>
+                    <FontAwesomeIconView glyphName="HDD_ALT"/>
+                </graphic>
+            </Label>
+            <Label fx:id="settingButton" styleClass="menu-icon" GridPane.columnIndex="5">
+                <graphic>
+                    <FontAwesomeIconView glyphName="COG"/>
+                </graphic>
+            </Label>
+            <Label fx:id="printerName" GridPane.columnIndex="6" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER" styleClass="machine-name">Panel Pi
+            </Label>
+            <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="7">
+                <padding>
+                    <Insets bottom="5" left="5" right="15" top="5"/>
+                </padding>
+                <Label fx:id="status" styleClass="printerStatus">Status</Label>
+            </HBox>
+            <Button fx:id="stop" styleClass="danger" GridPane.columnIndex="8">
+                <graphic>
+                    <FontAwesomeIconView glyphName="BOLT"/>
+                </graphic>
+                Emergency Stop
+            </Button>
+        </GridPane>
+    </top>
+</BorderPane>
