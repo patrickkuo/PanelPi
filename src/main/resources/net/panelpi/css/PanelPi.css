@@ -1,6 +1,6 @@
 .printerStatus.label {
     -fx-label-padding: 2 10 2 10;
-    -fx-background-radius: 3;
+    -fx-background-radius: 5;
     -fx-text-fill: white;
     -fx-background-color: silver;
 }
@@ -50,7 +50,7 @@
 }
 
 .on-off-button {
-    -fx-padding: 0 25 0 25;
+    -fx-padding: 0 20 0 20;
 }
 
 .on-off-button.success, .extrude-retract.normal {
@@ -77,7 +77,7 @@
 }
 
 .extrude-retract {
-    -fx-pref-width: 120;
+    -fx-pref-width: 110;
 }
 
 .extrude-retract.primary > .glyph-icon {
@@ -106,4 +106,3 @@
 .blue.label {
     -fx-text-fill: blue;
 }
-

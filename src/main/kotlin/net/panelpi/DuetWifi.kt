@@ -69,13 +69,17 @@ class DuetWifi {
         }
     }
 
-    fun sendCmd(cmd: String) {
+    fun sendCmd(vararg cmd: String) {
         if (!connected) {
-            println(cmd)
+            cmd.forEach {
+                println(it)
+            }
             return
         }
         return synchronized(buffer) {
-            serial.writeln(cmd.appendCheckSum())
+            cmd.forEach {
+                serial.writeln(it.appendCheckSum())
+            }
         }
     }
 
@@ -92,8 +96,9 @@ class DuetWifi {
     }
 }
 
-data class DuetData(val status: Status, val coords: Coordinates, val params: Parameters, val sensors: Sensors, val temps: Temperatures, val name: String = "Panel Pi")
+data class DuetData(val status: Status, val coords: Coordinates, val params: Parameters, val sensors: Sensors, val temps: Temperatures, val name: String = "PanelPi")
 
+// TODO: Make axes generic for other printer type.
 data class Coordinates(private val axesHomed: List<Boolean>, private val xyz: List<Double>) {
     val x get() = xyz.firstOrNull() ?: 0
     val y get() = xyz.getOrNull(1) ?: 0
@@ -109,20 +114,20 @@ data class Sensors(val probeValue: Int, val fanRPM: Int)
 
 data class Temperatures(val bed: Bed, val current: List<Double>, val state: List<Int>, val tools: Tools)
 
-data class Bed(val current: Double, val active: Double, val state: Int, val heater: Int)
+data class Bed(val current: Double, val active: Int, val state: Int, val heater: Int)
 
 // From json response, not sure why this is structured this way.
 data class Tools(val active: List<List<Int>>, val standby: List<List<Int>>)
 
-enum class Status(val value: String, val color: String) {
-    I("Idle", "GRAY"),
+enum class Status(private val value: String, val color: String) {
+    I("Idle", "SILVER"),
     P("Printing", "GREEN"),
     S("Stopped", "RED"),
     C("Running config file", "BLUE"),
     A("Paused", "YELLOW"),
     D("Pausing", "YELLOW"),
     R("Resuming", "GREEN"),
-    B("Busy", "RED"),
+    B("Busy", "ORANGE"),
     F("Performing firmware update", "BLUE");
 
     override fun toString(): String {

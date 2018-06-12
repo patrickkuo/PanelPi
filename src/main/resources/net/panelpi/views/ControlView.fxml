@@ -28,9 +28,12 @@
             <Label fx:id="bedTemp" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.halignment="CENTER">0°C
             </Label>
 
-            <ComboBox fx:id="bedActiveTemp" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.halignment="CENTER"/>
-            <ComboBox fx:id="toolActiveTemp" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.halignment="CENTER"/>
-            <ComboBox fx:id="toolStandbyTemp" GridPane.columnIndex="2" GridPane.rowIndex="3" GridPane.halignment="CENTER"/>
+            <ComboBox fx:id="bedActiveTemp" GridPane.columnIndex="1" GridPane.rowIndex="2"
+                      GridPane.halignment="CENTER"/>
+            <ComboBox fx:id="toolActiveTemp" GridPane.columnIndex="2" GridPane.rowIndex="2"
+                      GridPane.halignment="CENTER"/>
+            <ComboBox fx:id="toolStandbyTemp" GridPane.columnIndex="2" GridPane.rowIndex="3"
+                      GridPane.halignment="CENTER"/>
 
             <HBox GridPane.rowIndex="4" GridPane.columnSpan="3" spacing="10" alignment="CENTER_LEFT">
                 <Label styleClass="bold, red">X</Label>
@@ -113,10 +116,11 @@
             </GridPane>
         </graphic>
         <GridPane hgap="10" vgap="10">
-            <Label>Feed Amount :</Label>
-            <ComboBox fx:id="feedAmountCB" GridPane.columnIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" maxWidth="Infinity"/>
-            <Label GridPane.rowIndex="1">Feed Rate :</Label>
-            <ComboBox  fx:id="feedRateCB" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
+            <Label GridPane.halignment="RIGHT">Feed Amount :</Label>
+            <ComboBox fx:id="feedAmountCB" GridPane.columnIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"
+                      maxWidth="Infinity"/>
+            <Label GridPane.rowIndex="1" GridPane.halignment="RIGHT">Feed Rate :</Label>
+            <ComboBox fx:id="feedRateCB" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
             <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
                   alignment="CENTER">
                 <Button fx:id="retract" styleClass="extrude-retract, normal" focusTraversable="false">
@@ -144,7 +148,7 @@
             </GridPane>
         </graphic>
         <GridPane vgap="20" hgap="10">
-            <Label>ATX Power :</Label>
+            <Label GridPane.halignment="RIGHT">ATX Power :</Label>
             <HBox GridPane.columnIndex="1">
                 <ToggleButton fx:id="onButton" GridPane.columnIndex="1" styleClass="on-off-button, success"
                               focusTraversable="false">On
@@ -153,8 +157,11 @@
                               focusTraversable="false">Off
                 </ToggleButton>
             </HBox>
-            <Label GridPane.rowIndex="1">Fan :</Label>
-            <Slider GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            <Label GridPane.rowIndex="1" GridPane.halignment="RIGHT">Fan :</Label>
+            <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" alignment="CENTER">
+                <Slider fx:id="fanSlider" prefWidth="100"/>
+                <Label fx:id="fanSliderAmount" prefWidth="40">0 %</Label>
+            </HBox>
         </GridPane>
     </TitledPane>
 </GridPane>

@@ -1,8 +1,11 @@
 package net.panelpi.views
 
 import javafx.beans.value.ObservableValue
+import javafx.geometry.Insets
+import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.*
+import javafx.util.StringConverter
 import net.panelpi.controllers.PanelPiController
 import net.panelpi.map
 import tornadofx.*
@@ -48,9 +51,12 @@ class ControlView : View() {
     private val feedAmountCB: ComboBox<String> by fxid()
     private val feedRateCB: ComboBox<String> by fxid()
 
-    private val bedActiveTemp: ComboBox<String> by fxid()
-    private val toolActiveTemp: ComboBox<String> by fxid()
-    private val toolStandbyTemp: ComboBox<String> by fxid()
+    private val bedActiveTemp: ComboBox<Int> by fxid()
+    private val toolActiveTemp: ComboBox<Int> by fxid()
+    private val toolStandbyTemp: ComboBox<Int> by fxid()
+
+    private val fanSlider: Slider by fxid()
+    private val fanSliderAmount: Label by fxid()
 
     // Observable value for listening will need to be declared here, or else listener will get GCed and won't trigger event.
     private val coords = controller.duetData.map { it?.coords }
@@ -58,7 +64,7 @@ class ControlView : View() {
     private val yHomed = coords.map { it?.yHomed ?: false }
     private val zHomed = coords.map { it?.zHomed ?: false }
 
-    private val bedActive = controller.duetData.map { it?.temps?.bed?.active?.toInt() }
+    private val bedActive = controller.duetData.map { it?.temps?.bed?.active }
     private val toolActive = controller.duetData.map { it?.temps?.tools?.active?.firstOrNull()?.firstOrNull() }
     private val toolStandby = controller.duetData.map { it?.temps?.tools?.standby?.firstOrNull()?.firstOrNull() }
 
@@ -120,17 +126,47 @@ class ControlView : View() {
         extrude.disableProperty().bind(tempEnableProperties)
         retract.disableProperty().bind(tempEnableProperties)
 
-        // TODO: Make this configurable.
-        val bedTemps = observableList("0", "55", "60", "65", "70", "80", "90", "110", "120")
-        val toolTemps = observableList("0", "130", "180", "190", "200", "210", "220", "230", "235")
+        // TODO: Make these configurable.
+        val bedTemps = observableList(0, 55, 60, 65, 70, 80, 90, 110, 120)
+        val toolTemps = observableList(0, 130, 180, 190, 200, 210, 220, 230, 235)
 
         bedActiveTemp.items = bedTemps
         toolActiveTemp.items = toolTemps
         toolStandbyTemp.items = toolTemps
 
-        bedActive.addListener { _, _, newValue -> bedActiveTemp.selectionModel.select("$newValue") }
-        toolActive.addListener { _, _, newValue -> toolActiveTemp.selectionModel.select("$newValue") }
-        toolStandby.addListener { _, _, newValue -> toolStandbyTemp.selectionModel.select("$newValue") }
+        configTemperatureComboBox(bedActiveTemp, toolActiveTemp, toolStandbyTemp)
+
+        bedActive.addListener { _, _, newValue -> bedActiveTemp.selectionModel.select(newValue) }
+        toolActive.addListener { _, _, newValue -> toolActiveTemp.selectionModel.select(newValue) }
+        toolStandby.addListener { _, _, newValue -> toolStandbyTemp.selectionModel.select(newValue) }
+
+        bedActiveTemp.setOnAction {
+            val selected = bedActiveTemp.selectionModel.selectedItem
+            if (controller.duetData.get().temps.bed.active != selected) {
+                controller.duet.sendCmd("M140 S$selected")
+            }
+        }
+
+        toolActiveTemp.setOnAction {
+            val selected = toolActiveTemp.selectionModel.selectedItem
+            if (controller.duetData.get().temps.tools.active.first().first() != selected) {
+                // TODO: Support more extruder
+                controller.duet.sendCmd("G10 P0 S$selected")
+            }
+        }
+
+        toolStandbyTemp.setOnAction {
+            val selected = toolStandbyTemp.selectionModel.selectedItem
+            if (controller.duetData.get().temps.tools.standby.first().first() != selected) {
+                // TODO: Support more extruder
+                controller.duet.sendCmd("G10 P0 R$selected")
+            }
+        }
+
+        fanSlider.min = 0.0
+        fanSlider.max = 100.0
+        fanSlider.majorTickUnit = 1.0
+        fanSliderAmount.bind(fanSlider.valueProperty().map { "${it.toInt()} %" })
     }
 
     private fun bindHomeButton(homeButton: Button, homed: ObservableValue<Boolean>, axisName: String) {
@@ -140,6 +176,32 @@ class ControlView : View() {
         }
         homeButton.setOnMouseClicked {
             controller.duet.sendCmd("G28 $axisName")
+        }
+    }
+
+    private fun configTemperatureComboBox(vararg comboBox: ComboBox<Int>) {
+        comboBox.forEach {
+            it.converter = DegreeConverter
+            it.buttonCell = object : ListCell<Int>() {
+                override fun updateItem(item: Int?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item != null) {
+                        text = "$item °C"
+                        alignment = Pos.CENTER_RIGHT
+                        padding = Insets(padding.top, 0.0, padding.bottom, 0.0)
+                    }
+                }
+            }
+        }
+    }
+
+    private object DegreeConverter : StringConverter<Int>() {
+        override fun toString(o: Int?): String {
+            return o?.let { "$it °C" } ?: ""
+        }
+
+        override fun fromString(string: String?): Int {
+            return string?.split(" ")?.firstOrNull()?.toInt() ?: 0
         }
     }
 }
