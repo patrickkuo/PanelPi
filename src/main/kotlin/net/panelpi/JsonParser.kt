@@ -1,5 +1,6 @@
 package net.panelpi
 
+import mu.KotlinLogging
 import tornadofx.*
 import java.lang.reflect.InvocationTargetException
 import java.net.Proxy
@@ -11,6 +12,8 @@ import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
+
+private val logger = KotlinLogging.logger {}
 
 inline fun <reified T : Any> JsonObject.parseAs(): T = parseAs(T::class)
 
@@ -74,8 +77,7 @@ private fun JsonObject.getCollectionValue(path: String, type: KType): Collection
             }
         }
     } catch (e: Throwable) {
-        // TODO: logger.
-        println("Error parsing property $path")
+        logger.error { "Error parsing property $path" }
         throw e
     }
 

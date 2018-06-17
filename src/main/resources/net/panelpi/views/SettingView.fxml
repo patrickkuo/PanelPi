@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" hgap="10" vgap="10">
+    <padding>
+        <Insets top="10" bottom="10" right="10" left="10"/>
+    </padding>
+
+    <TitledPane text="Screen Brightness" alignment="BASELINE_CENTER" collapsible="false" maxWidth="Infinity"
+                GridPane.hgrow="ALWAYS">
+        <HBox alignment="CENTER" spacing="10">
+            <padding>
+                <Insets top="20" left="10" bottom="10" right="10"/>
+            </padding>
+            <Slider fx:id="brightnessSlider" maxWidth="Infinity" HBox.hgrow="ALWAYS" snapToTicks="true"
+                    majorTickUnit="32" showTickMarks="true" showTickLabels="true" minorTickCount="1"/>
+        </HBox>
+    </TitledPane>
+
+    <TitledPane text="Development" alignment="BASELINE_CENTER" collapsible="false" maxWidth="Infinity"
+                GridPane.hgrow="ALWAYS"
+                GridPane.rowIndex="1">
+        <FlowPane>
+            <Button onAction="#logDuetData">Log Duet Data</Button>
+        </FlowPane>
+    </TitledPane>
+</GridPane>

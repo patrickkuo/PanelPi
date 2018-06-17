@@ -10,12 +10,7 @@
         <Insets left="10" right="10" top="10" bottom="10"/>
     </padding>
 
-    <TitledPane collapsible="false" textAlignment="CENTER">
-        <graphic>
-            <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                <Label GridPane.halignment="CENTER" GridPane.fillWidth="true">Heaters</Label>
-            </GridPane>
-        </graphic>
+    <TitledPane text="Heaters" collapsible="false" alignment="BASELINE_CENTER">
         <GridPane hgap="15" vgap="10">
             <Label GridPane.columnIndex="2" GridPane.halignment="CENTER" styleClass="bold">Tool</Label>
             <Label GridPane.columnIndex="1" GridPane.halignment="CENTER" styleClass="bold">Bed</Label>
@@ -35,7 +30,7 @@
             <ComboBox fx:id="toolStandbyTemp" GridPane.columnIndex="2" GridPane.rowIndex="3"
                       GridPane.halignment="CENTER"/>
 
-            <HBox GridPane.rowIndex="4" GridPane.columnSpan="3" spacing="10" alignment="CENTER_LEFT">
+            <HBox GridPane.rowIndex="5" GridPane.columnSpan="3" spacing="10" alignment="CENTER_LEFT">
                 <Label styleClass="bold, red">X</Label>
                 <Label fx:id="xCoord"/>
                 <Label styleClass="bold, green">Y</Label>
@@ -46,12 +41,8 @@
         </GridPane>
     </TitledPane>
 
-    <TitledPane collapsible="false" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
-        <graphic>
-            <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                <Label GridPane.halignment="CENTER" GridPane.fillWidth="true">Head Movement</Label>
-            </GridPane>
-        </graphic>
+    <TitledPane text="Head Movement" collapsible="false" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
+                alignment="BASELINE_CENTER">
         <GridPane vgap="10" hgap="10">
             <Button fx:id="homeX" GridPane.rowIndex="0" styleClass="warning">Home X</Button>
             <Button fx:id="homeY" GridPane.rowIndex="1" styleClass="warning">Home Y</Button>
@@ -109,27 +100,22 @@
         </GridPane>
     </TitledPane>
 
-    <TitledPane collapsible="false" GridPane.columnIndex="1" GridPane.valignment="TOP">
-        <graphic>
-            <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                <Label GridPane.halignment="CENTER" GridPane.fillWidth="true">Extruder</Label>
-            </GridPane>
-        </graphic>
+    <TitledPane text="Extruder" collapsible="false" GridPane.columnIndex="1" GridPane.valignment="TOP" alignment="BASELINE_CENTER">
         <GridPane hgap="10" vgap="10">
             <Label GridPane.halignment="RIGHT">Feed Amount :</Label>
             <ComboBox fx:id="feedAmountCB" GridPane.columnIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"
                       maxWidth="Infinity"/>
             <Label GridPane.rowIndex="1" GridPane.halignment="RIGHT">Feed Rate :</Label>
             <ComboBox fx:id="feedRateCB" GridPane.rowIndex="1" GridPane.columnIndex="1" maxWidth="Infinity"/>
-            <HBox GridPane.rowIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+            <HBox GridPane.rowIndex="3" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
                   alignment="CENTER">
-                <Button fx:id="retract" styleClass="extrude-retract, normal" focusTraversable="false">
+                <Button fx:id="retract" styleClass="extrude-retract, normal">
                     <graphic>
                         <FontAwesomeIconView glyphName="ARROW_UP"/>
                     </graphic>
                     Retract
                 </Button>
-                <Button fx:id="extrude" styleClass="extrude-retract, primary" focusTraversable="false">
+                <Button fx:id="extrude" styleClass="extrude-retract, primary">
                     <graphic>
                         <FontAwesomeIconView glyphName="ARROW_DOWN"/>
                     </graphic>
@@ -140,13 +126,8 @@
         </GridPane>
     </TitledPane>
 
-    <TitledPane collapsible="false" GridPane.columnIndex="1" GridPane.rowIndex="1"
-                GridPane.valignment="TOP">
-        <graphic>
-            <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                <Label GridPane.halignment="CENTER" GridPane.fillWidth="true">Miscellaneous</Label>
-            </GridPane>
-        </graphic>
+    <TitledPane text="Miscellaneous" collapsible="false" GridPane.columnIndex="1" GridPane.rowIndex="1"
+                GridPane.valignment="TOP" alignment="BASELINE_CENTER">
         <GridPane vgap="20" hgap="10">
             <Label GridPane.halignment="RIGHT">ATX Power :</Label>
             <HBox GridPane.columnIndex="1">

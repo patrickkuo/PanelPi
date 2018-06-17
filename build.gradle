@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.2.31'
+    ext.kotlin_version = '1.2.50'
 
     repositories {
         mavenCentral()
@@ -46,6 +46,11 @@ dependencies {
     compile 'org.reactfx:reactfx:2.0-M5'
     compile 'org.fxmisc.easybind:easybind:1.0.3'
     compile 'de.jensd:fontawesomefx-fontawesome:4.7.0'
+
+    compile 'org.apache.logging.log4j:log4j-core:2.11.0'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.11.0'
+    compile 'io.github.microutils:kotlin-logging:1.5.4'
 }
 
 compileKotlin {
@@ -92,7 +97,7 @@ task runOnPi {
         ssh.run {
             session(remotes.pi) {
                 execute "sudo killall java || true"
-                execute "sudo java -Djava.ext.dirs=/home/pi/jdk1.8.0_92/jre/lib/ext/ -jar /opt/panelPi/panelPi.jar"
+                execute "sudo java -Dprism.order=sw -Djava.ext.dirs=/home/pi/jdk1.8.0_92/jre/lib/ext/ -jar /opt/panelPi/panelPi.jar"
             }
         }
     }

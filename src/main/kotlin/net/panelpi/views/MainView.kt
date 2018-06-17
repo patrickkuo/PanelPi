@@ -1,18 +1,19 @@
 package net.panelpi.views
 
-import net.panelpi.controllers.PanelPiController
-import net.panelpi.map
 import javafx.scene.Parent
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
+import net.panelpi.DuetWifi
+import net.panelpi.controllers.DuetController
+import net.panelpi.map
 import tornadofx.*
 
 class MainView : View() {
     override val root: Parent by fxml()
-    private val controller: PanelPiController by inject()
+    private val controller: DuetController by inject()
 
     private val status: Label by fxid()
     private val centerPane: BorderPane by fxid()
@@ -28,23 +29,24 @@ class MainView : View() {
 
     private val statusView: StatusView by inject()
     private val controlView: ControlView by inject()
+    private val settingView: SettingView by inject()
     private val comingSoon: ComingSoonView by inject()
 
     init {
-        status.bind(controller.duetData.map { it?.status ?: "disconnected" })
-        status.styleProperty().bind(controller.duetData.map {
-            "-fx-background-color: ${it?.status?.color ?: "GRAY"}"
-        })
+        // Status icon
+        status.bind(controller.duetData.map { it.status })
+        status.styleProperty().bind(controller.duetData.map { "-fx-background-color: ${it.status.color}" })
 
-        printerName.bind(controller.duetData.map { it?.name ?: "Panel Pi" })
+        // Printer name
+        printerName.bind(controller.duetData.map { it.name })
 
-        controller.duet
+        // Menu buttons
         val allButton = mapOf(
                 statusButton to statusView,
                 controlButton to controlView,
                 consoleButton to comingSoon,
                 fileButton to comingSoon,
-                settingButton to comingSoon)
+                settingButton to settingView)
 
         allButton.forEach { button, view ->
             button.setOnMouseClicked {
@@ -57,15 +59,15 @@ class MainView : View() {
                 }
             }
         }
+
+        // Select control view by default.
         runLater {
             controlButton.fireEvent(MouseEvent(MouseEvent.MOUSE_CLICKED, 0.0, 0.0, 0.0, 0.0, MouseButton.PRIMARY, 1, false, false, false, false, false, false, false, true, false, false, null))
         }
 
+        // Emergency stop button.
         stop.setOnAction {
-            controller.duet.sendCmd("M112")
-            controller.duet.sendCmd("M999")
+            DuetWifi.instance.sendCmd("M112", "M999")
         }
     }
-
-
 }

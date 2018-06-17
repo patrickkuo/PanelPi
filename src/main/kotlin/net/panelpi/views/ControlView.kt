@@ -5,14 +5,14 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.*
-import javafx.util.StringConverter
-import net.panelpi.controllers.PanelPiController
+import net.panelpi.DuetWifi
+import net.panelpi.controllers.DuetController
 import net.panelpi.map
 import tornadofx.*
 
 class ControlView : View() {
     override val root: Parent by fxml()
-    private val controller: PanelPiController by inject()
+    private val controller: DuetController by inject()
 
     private val homeX: Button by fxid()
     private val homeY: Button by fxid()
@@ -65,8 +65,8 @@ class ControlView : View() {
     private val zHomed = coords.map { it?.zHomed ?: false }
 
     private val bedActive = controller.duetData.map { it?.temps?.bed?.active }
-    private val toolActive = controller.duetData.map { it?.temps?.tools?.active?.firstOrNull()?.firstOrNull() }
-    private val toolStandby = controller.duetData.map { it?.temps?.tools?.standby?.firstOrNull()?.firstOrNull() }
+    private val toolActive = controller.duetData.map { it?.temps?.tools?.activeTemperature(0) }
+    private val toolStandby = controller.duetData.map { it?.temps?.tools?.standbyTemperature(0) }
 
     init {
         root.disableProperty().bind(controller.duetData.map { it == null })
@@ -81,22 +81,22 @@ class ControlView : View() {
 
         onButton.setOnAction {
             if (controller.duetData.value?.params?.atxPower == false) {
-                controller.duet.sendCmd("M80")
+                DuetWifi.instance.sendCmd("M80")
             }
             it.consume()
             onButton.isSelected = controller.duetData.value?.params?.atxPower == true
         }
         offButton.setOnAction {
             if (controller.duetData.value?.params?.atxPower == true) {
-                controller.duet.sendCmd("M81")
+                DuetWifi.instance.sendCmd("M81")
             }
             it.consume()
             offButton.isSelected = controller.duetData.value?.params?.atxPower == false
         }
 
-        bedComp.setOnAction { controller.duet.sendCmd("G32") }
-        homeAll.setOnAction { controller.duet.sendCmd("G28") }
-        gridComp.setOnAction { controller.duet.sendCmd("G29") }
+        bedComp.setOnAction { DuetWifi.instance.sendCmd("G32") }
+        homeAll.setOnAction { DuetWifi.instance.sendCmd("G28") }
+        gridComp.setOnAction { DuetWifi.instance.sendCmd("G29") }
 
         val amounts = observableList("100", "10", "1", "0.1")
 
@@ -105,14 +105,14 @@ class ControlView : View() {
             it.selectionModel.select(0)
         }
 
-        bedTemp.bind(controller.duetData.map { it?.temps?.bed?.let { "${it.current}°C" } ?: "--" })
-        toolTemp.bind(controller.duetData.map { it?.temps?.current?.let { "${it.first()}°C" } ?: "--" })
+        bedTemp.bind(controller.duetData.map { it.temps.bed.let { "${it.current}°C" } })
+        toolTemp.bind(controller.duetData.map { it.temps.current.let { "${it.firstOrNull()}°C" } })
 
-        xCoord.bind(controller.duetData.map { "${it?.coords?.x}" })
-        yCoord.bind(controller.duetData.map { "${it?.coords?.y}" })
-        zCoord.bind(controller.duetData.map { "${it?.coords?.z}" })
+        xCoord.bind(controller.duetData.map { "${it.coords.x}" })
+        yCoord.bind(controller.duetData.map { "${it.coords.y}" })
+        zCoord.bind(controller.duetData.map { "${it.coords.z}" })
 
-        val tempEnableProperties = controller.duetData.map { (it?.temps?.current?.first() ?: 0.0) < 180 }
+        val tempEnableProperties = controller.duetData.map { (it.temps.current.firstOrNull() ?: 0.0) < 180 }
 
         val feedAmounts = observableList("100", "50", "20", "10", "5", "1")
         val feedRate = observableList("60", "30", "15", "5", "1")
@@ -134,7 +134,7 @@ class ControlView : View() {
         toolActiveTemp.items = toolTemps
         toolStandbyTemp.items = toolTemps
 
-        configTemperatureComboBox(bedActiveTemp, toolActiveTemp, toolStandbyTemp)
+        configTemperatureComboBoxes(bedActiveTemp, toolActiveTemp, toolStandbyTemp)
 
         bedActive.addListener { _, _, newValue -> bedActiveTemp.selectionModel.select(newValue) }
         toolActive.addListener { _, _, newValue -> toolActiveTemp.selectionModel.select(newValue) }
@@ -143,23 +143,23 @@ class ControlView : View() {
         bedActiveTemp.setOnAction {
             val selected = bedActiveTemp.selectionModel.selectedItem
             if (controller.duetData.get().temps.bed.active != selected) {
-                controller.duet.sendCmd("M140 S$selected")
+                DuetWifi.instance.sendCmd("M140 S$selected")
             }
         }
 
         toolActiveTemp.setOnAction {
             val selected = toolActiveTemp.selectionModel.selectedItem
-            if (controller.duetData.get().temps.tools.active.first().first() != selected) {
+            if (controller.duetData.get().temps.tools.activeTemperature(0) != selected) {
                 // TODO: Support more extruder
-                controller.duet.sendCmd("G10 P0 S$selected")
+                DuetWifi.instance.sendCmd("G10 P0 S$selected")
             }
         }
 
         toolStandbyTemp.setOnAction {
             val selected = toolStandbyTemp.selectionModel.selectedItem
-            if (controller.duetData.get().temps.tools.standby.first().first() != selected) {
+            if (controller.duetData.get().temps.tools.standbyTemperature(0) != selected) {
                 // TODO: Support more extruder
-                controller.duet.sendCmd("G10 P0 R$selected")
+                DuetWifi.instance.sendCmd("G10 P0 R$selected")
             }
         }
 
@@ -175,11 +175,11 @@ class ControlView : View() {
             homeButton.toggleClass("warning", !newValue)
         }
         homeButton.setOnMouseClicked {
-            controller.duet.sendCmd("G28 $axisName")
+            DuetWifi.instance.sendCmd("G28 $axisName")
         }
     }
 
-    private fun configTemperatureComboBox(vararg comboBox: ComboBox<Int>) {
+    private fun configTemperatureComboBoxes(vararg comboBox: ComboBox<Int>) {
         comboBox.forEach {
             it.converter = DegreeConverter
             it.buttonCell = object : ListCell<Int>() {
@@ -195,13 +195,19 @@ class ControlView : View() {
         }
     }
 
-    private object DegreeConverter : StringConverter<Int>() {
-        override fun toString(o: Int?): String {
-            return o?.let { "$it °C" } ?: ""
-        }
-
-        override fun fromString(string: String?): Int {
-            return string?.split(" ")?.firstOrNull()?.toInt() ?: 0
+    private fun configureMoveAmountComboBoxes(vararg comboBox: ComboBox<Int>) {
+        comboBox.forEach {
+            it.converter = DegreeConverter
+            it.buttonCell = object : ListCell<Int>() {
+                override fun updateItem(item: Int?, empty: Boolean) {
+                    super.updateItem(item, empty)
+                    if (item != null) {
+                        text = "$item °C"
+                        alignment = Pos.CENTER_RIGHT
+                        padding = Insets(padding.top, 0.0, padding.bottom, 0.0)
+                    }
+                }
+            }
         }
     }
 }

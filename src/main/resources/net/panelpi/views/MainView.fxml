@@ -4,8 +4,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane prefHeight="480.0" prefWidth="800.0" stylesheets="@../css/PanelPi.css, @../css/bootstrap3.css"
-            xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="480.0" prefWidth="800.0" stylesheets="@../css/bootstrap3.css, @../css/PanelPi.css"
+            xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1">
     <center>
         <BorderPane fx:id="centerPane"/>
     </center>
@@ -40,7 +40,8 @@
                     <FontAwesomeIconView glyphName="COG"/>
                 </graphic>
             </Label>
-            <Label fx:id="printerName" GridPane.columnIndex="6" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER" styleClass="machine-name">Panel Pi
+            <Label fx:id="printerName" GridPane.columnIndex="6" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   styleClass="machine-name">Panel Pi
             </Label>
             <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="7">
                 <padding>

@@ -21,13 +21,13 @@
 .menu-icon > .glyph-icon {
     -fx-text-fill: #428bca;
     -fx-fill: #428bca;
-    -glyph-size: 30px;
+    -glyph-size: 35px;
 }
 
 .menu-icon-selected > .glyph-icon {
     -fx-text-fill: white;
     -fx-fill: white;
-    -glyph-size: 30px;
+    -glyph-size: 35px;
 }
 
 .menu-icon.glyph-icon:hover {
@@ -50,15 +50,15 @@
 }
 
 .on-off-button {
-    -fx-padding: 0 20 0 20;
+    -fx-padding: 10 20 10 20;
 }
 
-.on-off-button.success, .extrude-retract.normal {
+.on-off-button.success, .extrude-retract.normal, .baby-stepping.left {
     -fx-background-radius: 4 0 0 4;
     -fx-border-radius: 4 0 0 4;
 }
 
-.on-off-button.danger, .extrude-retract.primary {
+.on-off-button.danger, .extrude-retract.primary, .baby-stepping.right {
     -fx-background-radius: 0 4 4 0;
     -fx-border-radius: 0 4 4 0;
 }
@@ -69,7 +69,7 @@
 }
 
 .small-pane {
-    -fx-padding: 0 0 -15 0;
+    -fx-padding: 0 0 0 0;
 }
 
 .titled-pane > .title {
@@ -86,7 +86,7 @@
 }
 
 .fixWidth {
-    -fx-pref-width: 100;
+    -fx-pref-width: 120;
 }
 
 .bold.label {
@@ -105,4 +105,18 @@
 
 .blue.label {
     -fx-text-fill: blue;
+}
+
+.data-grid Line {
+    -fx-stroke: lightgray;
+}
+
+.button {
+    -fx-padding: 8 15 8 15;
+    -fx-focus-traversable: false;
+}
+
+.button, .label {
+    -fx-font-family: 'sans-serif';
+    -fx-font-size: 16;
 }

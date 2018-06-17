@@ -1,8 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml">
-    <Label>Status View</Label>
-</AnchorPane>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" vgap="10" hgap="10">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+
+    <HBox spacing="10" GridPane.hgrow="ALWAYS" GridPane.columnSpan="4">
+        <ProgressBar progress="0.0" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Label>0%</Label>
+    </HBox>
+
+    <TitledPane text="Print Control" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1" maxHeight="Infinity">
+        <VBox alignment="CENTER" spacing="10">
+            <Button styleClass="warning">
+                <graphic>
+                    <FontAwesomeIconView glyphName="PAUSE" style="-fx-fill: WHITE"/>
+                </graphic>
+                Pause Print
+            </Button>
+            <CheckBox>Enable Auto-Sleep</CheckBox>
+        </VBox>
+    </TitledPane>
+    <TitledPane text="Z Baby Stepping" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1" GridPane.columnIndex="1">
+        <VBox spacing="10" alignment="CENTER">
+            <HBox spacing="5">
+                <Label>Current Offset :</Label>
+                <Label fx:id="offsetAmount">0</Label>
+                <Label>mm</Label>
+            </HBox>
+            <HBox alignment="CENTER">
+                <Button styleClass="baby-stepping, left">
+                    <graphic>
+                        <VBox alignment="BASELINE_CENTER">
+                            <HBox alignment="CENTER">
+                                <FontAwesomeIconView glyphName="HAND_ALT_DOWN"/>
+                                <Label>-0.05</Label>
+                            </HBox>
+                            <Label>mm</Label>
+                        </VBox>
+                    </graphic>
+                </Button>
+                <Button styleClass="baby-stepping, right">
+                    <graphic>
+                        <VBox alignment="BASELINE_CENTER">
+                            <HBox alignment="CENTER">
+                                <FontAwesomeIconView glyphName="HAND_ALT_UP"/>
+                                <Label>+0.05</Label>
+                            </HBox>
+                            <Label>mm</Label>
+                        </VBox>
+                    </graphic>
+                </Button>
+            </HBox>
+        </VBox>
+    </TitledPane>
+    <Pane GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
+
+    <!--<TitledPane collapsible="false" alignment="BASELINE_CENTER">
+        <graphic>
+            <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
+                <Label GridPane.fillWidth="true" GridPane.halignment="CENTER">Speed Factor</Label>
+            </GridPane>
+        </graphic>
+        <VBox>
+            <padding>
+                <Insets left="10" top="10" bottom="10" right="10"/>
+            </padding>
+            <Slider/>
+        </VBox>
+    </TitledPane>-->
+
+    <!--        <HBox spacing="10">
+            <TitledPane collapsible="false" alignment="BASELINE_CENTER" HBox.hgrow="ALWAYS">
+                <graphic>
+                    <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
+                        <Label GridPane.fillWidth="true" GridPane.halignment="CENTER">Fan Control</Label>
+                    </GridPane>
+                </graphic>
+                <HBox spacing="5">
+                    <Label>Fan:</Label>
+                    <Slider HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </TitledPane>
+            <TitledPane collapsible="false" alignment="BASELINE_CENTER" HBox.hgrow="ALWAYS">
+                <graphic>
+                    <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
+                        <Label GridPane.fillWidth="true" GridPane.halignment="CENTER">Extrusion Factors</Label>
+                    </GridPane>
+                </graphic>
+                <HBox spacing="5">
+                    <Label>Extruder 0:</Label>
+                    <Slider HBox.hgrow="ALWAYS"/>
+                </HBox>
+            </TitledPane>
+        </HBox>-->
+    <TitledPane text="Collected Data" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="2" GridPane.columnSpan="3"
+                GridPane.hgrow="ALWAYS" GridPane.fillWidth="true">
+        <GridPane vgap="5" hgap="5">
+            <padding>
+                <Insets top="10" left="5" bottom="10" right="5"/>
+            </padding>
+            <Label GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Warm-Up
+            </Label>
+            <Label GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   style="-fx-font-weight: bold">Current Layer
+            </Label>
+            <Label GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   style="-fx-font-weight: bold">Last Layer
+            </Label>
+            <Label GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   style="-fx-font-weight: bold">Print
+                Duration
+            </Label>
+
+            <Label GridPane.rowIndex="1" GridPane.halignment="CENTER">10s</Label>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10s</Label>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10s</Label>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10s</Label>
+        </GridPane>
+    </TitledPane>
+    <TitledPane text="Estimations" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="3" GridPane.columnSpan="3">
+        <GridPane vgap="5" hgap="5">
+            <padding>
+                <Insets top="10" left="5" bottom="10" right="5"/>
+            </padding>
+            <Label GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Based on
+            </Label>
+            <Label GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   style="-fx-font-weight: bold">Filament
+                Usage
+            </Label>
+            <Label GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   style="-fx-font-weight: bold">File Progress
+            </Label>
+            <Label GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER"
+                   style="-fx-font-weight: bold">Layer Time
+            </Label>
+
+            <Label GridPane.rowIndex="1" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Time Left
+            </Label>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10m 09s</Label>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10m 09s</Label>
+            <Label GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10m 09s</Label>
+
+            <Label GridPane.rowIndex="2" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Est. End Time
+            </Label>
+            <Label GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.halignment="CENTER">22:11:09</Label>
+            <Label GridPane.rowIndex="2" GridPane.columnIndex="2" GridPane.halignment="CENTER">22:11:09</Label>
+            <Label GridPane.rowIndex="2" GridPane.columnIndex="3" GridPane.halignment="CENTER">22:11:09</Label>
+        </GridPane>
+    </TitledPane>
+
+    <TitledPane text="File Information" collapsible="false" alignment="BASELINE_CENTER" GridPane.columnIndex="3" GridPane.rowIndex="1"
+                GridPane.rowSpan="3" maxWidth="180" GridPane.valignment="TOP">
+        <VBox spacing="10">
+            <VBox spacing="5">
+                <Label style="-fx-font-weight: bold">Size:</Label>
+                <Label>5.4 MiB</Label>
+            </VBox>
+            <VBox spacing="5">
+
+                <Label style="-fx-font-weight: bold">Object Height:</Label>
+                <Label>72.38 mm</Label>
+            </VBox>
+            <VBox spacing="5">
+                <Label style="-fx-font-weight: bold">Layer Height:</Label>
+                <Label wrapText="true">0.18 mm / 0.2 mm</Label>
+            </VBox>
+            <VBox spacing="5">
+                <Label style="-fx-font-weight: bold">Filament Usage:</Label>
+                <Label>7770.5 mm</Label>
+            </VBox>
+            <VBox spacing="5">
+                <Label style="-fx-font-weight: bold">Generated by:</Label>
+                <Label wrapText="true">Simplify3D(R) Version 4.0.0</Label>
+            </VBox>
+        </VBox>
+    </TitledPane>
+</GridPane>
