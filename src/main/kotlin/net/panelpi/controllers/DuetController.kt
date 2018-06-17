@@ -11,7 +11,8 @@ class DuetController : Controller() {
 
     init {
         timer(period = 1000, initialDelay = 1000) {
-            runLater { duetData.set(DuetWifi.instance.getData()) }
+            val data = DuetWifi.instance.getData()
+            runLater { duetData.set(data) }
         }
     }
 }

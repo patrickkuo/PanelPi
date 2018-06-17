@@ -59,10 +59,10 @@ class ControlView : View() {
     private val fanSliderAmount: Label by fxid()
 
     // Observable value for listening will need to be declared here, or else listener will get GCed and won't trigger event.
-    private val coords = controller.duetData.map { it?.coords }
-    private val xHomed = coords.map { it?.xHomed ?: false }
-    private val yHomed = coords.map { it?.yHomed ?: false }
-    private val zHomed = coords.map { it?.zHomed ?: false }
+    private val coords = controller.duetData.map { it.axes }
+    private val xHomed = coords.map { it["X"]?.homed ?: false }
+    private val yHomed = coords.map { it["Y"]?.homed ?: false }
+    private val zHomed = coords.map { it["Z"]?.homed ?: false }
 
     private val bedActive = controller.duetData.map { it?.temps?.bed?.active }
     private val toolActive = controller.duetData.map { it?.temps?.tools?.activeTemperature(0) }
@@ -94,9 +94,24 @@ class ControlView : View() {
             offButton.isSelected = controller.duetData.value?.params?.atxPower == false
         }
 
-        bedComp.setOnAction { DuetWifi.instance.sendCmd("G32") }
-        homeAll.setOnAction { DuetWifi.instance.sendCmd("G28") }
-        gridComp.setOnAction { DuetWifi.instance.sendCmd("G29") }
+        bedComp.setOnAction {
+            runAsync {
+                bedComp.isDisable = true
+                DuetWifi.instance.sendCmd("G32")
+            }.setOnSucceeded {
+                bedComp.isDisable = false
+            }
+        }
+        homeAll.setOnAction {
+            runAsync {
+                DuetWifi.instance.sendCmd("G28")
+            }
+        }
+        gridComp.setOnAction {
+            runAsync {
+                DuetWifi.instance.sendCmd("G29")
+            }
+        }
 
         val amounts = observableList("100", "10", "1", "0.1")
 
@@ -108,11 +123,9 @@ class ControlView : View() {
         bedTemp.bind(controller.duetData.map { it.temps.bed.let { "${it.current}°C" } })
         toolTemp.bind(controller.duetData.map { it.temps.current.let { "${it.firstOrNull()}°C" } })
 
-        xCoord.bind(controller.duetData.map { "${it.coords.x}" })
-        yCoord.bind(controller.duetData.map { "${it.coords.y}" })
-        zCoord.bind(controller.duetData.map { "${it.coords.z}" })
-
-        val tempEnableProperties = controller.duetData.map { (it.temps.current.firstOrNull() ?: 0.0) < 180 }
+        xCoord.bind(controller.duetData.map { "${it.axes["X"]?.coord}" })
+        yCoord.bind(controller.duetData.map { "${it.axes["Y"]?.coord}" })
+        zCoord.bind(controller.duetData.map { "${it.axes["Z"]?.coord}" })
 
         val feedAmounts = observableList("100", "50", "20", "10", "5", "1")
         val feedRate = observableList("60", "30", "15", "5", "1")
@@ -123,8 +136,8 @@ class ControlView : View() {
         feedAmountCB.selectionModel.select("10")
         feedRateCB.selectionModel.select("5")
 
-        extrude.disableProperty().bind(tempEnableProperties)
-        retract.disableProperty().bind(tempEnableProperties)
+        extrude.disableProperty().bind(controller.duetData.map { !it.isExtrudeEnable })
+        retract.disableProperty().bind(controller.duetData.map { !it.isRetractEnable })
 
         // TODO: Make these configurable.
         val bedTemps = observableList(0, 55, 60, 65, 70, 80, 90, 110, 120)
@@ -167,6 +180,26 @@ class ControlView : View() {
         fanSlider.max = 100.0
         fanSlider.majorTickUnit = 1.0
         fanSliderAmount.bind(fanSlider.valueProperty().map { "${it.toInt()} %" })
+
+        xLeft.setOnAction {
+            DuetWifi.instance.sendCmd("G91", "G1 X-${xAmount.value}", "G90")
+        }
+        xRight.setOnAction {
+            DuetWifi.instance.sendCmd("G91", "G1 X${xAmount.value}", "G90")
+        }
+
+        yLeft.setOnAction {
+            DuetWifi.instance.sendCmd("G91", "G1 Y-${yAmount.value}", "G90")
+        }
+        yRight.setOnAction {
+            DuetWifi.instance.sendCmd("G91", "G1 Y${yAmount.value}", "G90")
+        }
+        zLeft.setOnAction {
+            DuetWifi.instance.sendCmd("G91", "G1 Z-${zAmount.value}", "G90")
+        }
+        zRight.setOnAction {
+            DuetWifi.instance.sendCmd("G91", "G1 Z${zAmount.value}", "G90")
+        }
     }
 
     private fun bindHomeButton(homeButton: Button, homed: ObservableValue<Boolean>, axisName: String) {

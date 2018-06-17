@@ -15,15 +15,18 @@ class SettingView : View() {
     companion object : KLogging()
 
     init {
-        if (!DuetWifi.instance.devMode) {
+        val brightnessControl = Paths.get("/sys/class/backlight/rpi_backlight/brightness").toFile()
+        if (brightnessControl.exists()) {
             brightnessSlider.value = Paths.get("/sys/class/backlight/rpi_backlight/brightness").toFile().readLines().first().toDouble()
+
         }
+        brightnessSlider.isDisable = !brightnessControl.exists()
         brightnessSlider.min = 0.0
         brightnessSlider.max = 255.0
         brightnessSlider.valueProperty().addListener { _, _, newValue ->
             if (!brightnessSlider.isValueChanging) {
                 if (!DuetWifi.instance.devMode) {
-                    PrintWriter("/sys/class/backlight/rpi_backlight/brightness").use {
+                    PrintWriter(brightnessControl).use {
                         it.print(newValue.toInt().toString())
                     }
                 }

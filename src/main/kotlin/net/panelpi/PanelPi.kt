@@ -9,6 +9,7 @@ class PanelPiApp : App(MainView::class) {
     init {
         Thread.setDefaultUncaughtExceptionHandler { _, e ->
             logger.error(e) { "Uncaught exception." }
+            DuetWifi.instance.logDuetData()
         }
     }
 }

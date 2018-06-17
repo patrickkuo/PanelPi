@@ -3,6 +3,7 @@ package net.panelpi
 import com.pi4j.io.serial.*
 import mu.KLogging
 import java.io.StringReader
+import java.util.concurrent.locks.ReentrantLock
 import javax.json.Json
 import javax.json.JsonObject
 import javax.json.JsonValue
@@ -21,6 +22,8 @@ class DuetWifi private constructor() {
     val devMode get() = _devMode
 
     private var duetData: JsonObject = JsonValue.EMPTY_JSON_OBJECT
+
+    private val lock = ReentrantLock()
 
     init {
         createSerialConfig()?.let {
@@ -59,6 +62,9 @@ class DuetWifi private constructor() {
 
     private fun sendCmdWithResponse(cmd: String): JsonObject? {
         return synchronized(buffer) {
+            if (buffer.isNotEmpty()) {
+                logger.info { buffer }
+            }
             buffer = ""
             serial.writeln(cmd.appendCheckSum())
             var waited = 0
@@ -69,6 +75,7 @@ class DuetWifi private constructor() {
             try {
                 Json.createReader(StringReader(buffer)).readObject()
             } catch (e: Throwable) {
+                logger.error(e) { "Some error while getting data. Buffer = $buffer" }
                 null
             } finally {
                 //logger.trace { buffer }
@@ -84,7 +91,7 @@ class DuetWifi private constructor() {
             }
             return
         }
-        return synchronized(buffer) {
+        lock.tryWithLock {
             cmd.forEach {
                 serial.writeln(it.appendCheckSum())
             }
@@ -105,21 +112,31 @@ class DuetWifi private constructor() {
 }
 
 data class DuetData(val status: Status = Status.X,
-                    val coords: Coordinates = Coordinates(),
+                    private val coords: Coordinates = Coordinates(),
                     val params: Parameters = Parameters(),
                     val sensors: Sensors = Sensors(),
                     val temps: Temperatures = Temperatures(),
-                    val name: String = "PanelPi")
-
-// TODO: Make axes generic for other printer type.
-data class Coordinates(private val axesHomed: List<Boolean> = emptyList(), private val xyz: List<Double> = emptyList()) {
-    val x get() = xyz.firstOrNull() ?: 0
-    val y get() = xyz.getOrNull(1) ?: 0
-    val z get() = xyz.getOrNull(2) ?: 0
-    val xHomed get() = axesHomed.firstOrNull() ?: false
-    val yHomed get() = axesHomed.getOrNull(1) ?: false
-    val zHomed get() = axesHomed.getOrNull(2) ?: false
+                    val name: String = "PanelPi",
+                    val timesLeft: TimesLeft? = null,
+                    val firstLayerDuration: Double? = null,
+                    val fractionPrinted: Double? = null,
+                    val warmUpDuration: Double? = null,
+                    val currentLayerTime: Double? = null,
+                    private val axisNames: String = "",
+                    private val coldExtrudeTemp: Int = Int.MAX_VALUE,
+                    private val coldRetractTemp: Int = Int.MAX_VALUE,
+                    private val currentTool: Int = 0
+) {
+    val axes = (axisNames.toList().map(Char::toString) zip coords.axes).toMap()
+    val isExtrudeEnable = temps.current.getOrNull(currentTool)?.let { it > coldExtrudeTemp } ?: false
+    val isRetractEnable = temps.current.getOrNull(currentTool)?.let { it > coldRetractTemp } ?: false
 }
+
+data class Coordinates(private val axesHomed: List<Boolean> = emptyList(), private val xyz: List<Double> = emptyList()) {
+    val axes = (axesHomed zip xyz).map { Axis(it.first, it.second) }
+}
+
+data class Axis(val homed: Boolean, val coord: Double)
 
 data class Parameters(val atxPower: Boolean = false,
                       val fanPercent: List<Double> = emptyList(),
@@ -142,6 +159,8 @@ data class Tools(private val active: List<List<Int>> = emptyList(), private val 
     fun standbyTemperature(toolNumber: Int): Int = standby.firstOrNull()?.getOrNull(toolNumber) ?: -1
 }
 
+data class TimesLeft(val file: Double, val filament: Double, val layer: Double)
+
 enum class Status(private val value: String, val color: String) {
     I("Idle", "SILVER"),
     P("Printing", "GREEN"),
@@ -152,7 +171,8 @@ enum class Status(private val value: String, val color: String) {
     R("Resuming", "GREEN"),
     B("Busy", "ORANGE"),
     F("Performing firmware update", "BLUE"),
-    X("Disconnected", "Red");
+    X("Disconnected", "Red"),
+    O("Off", "Red");
 
     override fun toString(): String {
         return value
