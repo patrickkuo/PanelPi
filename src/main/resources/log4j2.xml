@@ -4,9 +4,13 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%msg%n"/>
         </Console>
-        <File name="File" fileName="logs/panelpi.log">
+        <RollingFile name="File" filePattern="logs/panelpi-%d{yyyyMMdd-HHmmss}.log">
             <PatternLayout pattern="[%p] %d [%t] %c - %m%n"/>
-        </File>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="trace">

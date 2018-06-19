@@ -182,23 +182,23 @@ class ControlView : View() {
         fanSliderAmount.bind(fanSlider.valueProperty().map { "${it.toInt()} %" })
 
         xLeft.setOnAction {
-            DuetWifi.instance.sendCmd("G91", "G1 X-${xAmount.value}", "G90")
+            DuetWifi.instance.sendCmd("M120", "G91", "G1 X-${xAmount.value} F6000", "M121")
         }
         xRight.setOnAction {
-            DuetWifi.instance.sendCmd("G91", "G1 X${xAmount.value}", "G90")
+            DuetWifi.instance.sendCmd("M120", "G91", "G1 X${xAmount.value} F6000", "M121")
         }
 
         yLeft.setOnAction {
-            DuetWifi.instance.sendCmd("G91", "G1 Y-${yAmount.value}", "G90")
+            DuetWifi.instance.sendCmd("M120", "G91", "G1 Y-${yAmount.value} F6000", "M121")
         }
         yRight.setOnAction {
-            DuetWifi.instance.sendCmd("G91", "G1 Y${yAmount.value}", "G90")
+            DuetWifi.instance.sendCmd("M120", "G91", "G1 Y${yAmount.value} F6000", "M121")
         }
         zLeft.setOnAction {
-            DuetWifi.instance.sendCmd("G91", "G1 Z-${zAmount.value}", "G90")
+            DuetWifi.instance.sendCmd("M120", "G91", "G1 Z-${zAmount.value} F6000", "M121")
         }
         zRight.setOnAction {
-            DuetWifi.instance.sendCmd("G91", "G1 Z${zAmount.value}", "G90")
+            DuetWifi.instance.sendCmd("M120", "G91", "G1 Z${zAmount.value} F6000", "M121")
         }
     }
 
