@@ -5,14 +5,14 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.*
-import net.panelpi.DuetWifi
-import net.panelpi.controllers.DuetController
+import net.panelpi.duetwifi.DuetWifi
 import net.panelpi.map
 import tornadofx.*
 
 class ControlView : View() {
     override val root: Parent by fxml()
-    private val controller: DuetController by inject()
+
+    private val duetData = DuetWifi.instance.duetData
 
     private val homeX: Button by fxid()
     private val homeY: Button by fxid()
@@ -59,18 +59,16 @@ class ControlView : View() {
     private val fanSliderAmount: Label by fxid()
 
     // Observable value for listening will need to be declared here, or else listener will get GCed and won't trigger event.
-    private val coords = controller.duetData.map { it.axes }
+    private val coords = duetData.map { it.axes }
     private val xHomed = coords.map { it["X"]?.homed ?: false }
     private val yHomed = coords.map { it["Y"]?.homed ?: false }
     private val zHomed = coords.map { it["Z"]?.homed ?: false }
 
-    private val bedActive = controller.duetData.map { it?.temps?.bed?.active }
-    private val toolActive = controller.duetData.map { it?.temps?.tools?.activeTemperature(0) }
-    private val toolStandby = controller.duetData.map { it?.temps?.tools?.standbyTemperature(0) }
+    private val bedActive: ObservableValue<Int?> = duetData.map { it.temps.bed.active }
+    private val toolActive: ObservableValue<Int?> = duetData.map { it.temps.tools.activeTemperature(0) }
+    private val toolStandby: ObservableValue<Int?> = duetData.map { it.temps.tools.standbyTemperature(0) }
 
     init {
-        root.disableProperty().bind(controller.duetData.map { it == null })
-
         bindHomeButton(homeX, xHomed, "X")
         bindHomeButton(homeY, yHomed, "Y")
         bindHomeButton(homeZ, zHomed, "Z")
@@ -80,18 +78,18 @@ class ControlView : View() {
         offButton.toggleGroup = toggleGroup
 
         onButton.setOnAction {
-            if (controller.duetData.value?.params?.atxPower == false) {
+            if (duetData.value?.params?.atxPower == false) {
                 DuetWifi.instance.sendCmd("M80")
             }
             it.consume()
-            onButton.isSelected = controller.duetData.value?.params?.atxPower == true
+            onButton.isSelected = duetData.value?.params?.atxPower == true
         }
         offButton.setOnAction {
-            if (controller.duetData.value?.params?.atxPower == true) {
+            if (duetData.value?.params?.atxPower == true) {
                 DuetWifi.instance.sendCmd("M81")
             }
             it.consume()
-            offButton.isSelected = controller.duetData.value?.params?.atxPower == false
+            offButton.isSelected = duetData.value?.params?.atxPower == false
         }
 
         bedComp.setOnAction {
@@ -120,12 +118,12 @@ class ControlView : View() {
             it.selectionModel.select(0)
         }
 
-        bedTemp.bind(controller.duetData.map { it.temps.bed.let { "${it.current}°C" } })
-        toolTemp.bind(controller.duetData.map { it.temps.current.let { "${it.firstOrNull()}°C" } })
+        bedTemp.bind(duetData.map { it.temps.bed.let { "${it.current}°C" } })
+        toolTemp.bind(duetData.map { it.temps.current.let { "${it.firstOrNull()}°C" } })
 
-        xCoord.bind(controller.duetData.map { "${it.axes["X"]?.coord}" })
-        yCoord.bind(controller.duetData.map { "${it.axes["Y"]?.coord}" })
-        zCoord.bind(controller.duetData.map { "${it.axes["Z"]?.coord}" })
+        xCoord.bind(duetData.map { "${it.axes["X"]?.coord}" })
+        yCoord.bind(duetData.map { "${it.axes["Y"]?.coord}" })
+        zCoord.bind(duetData.map { "${it.axes["Z"]?.coord}" })
 
         val feedAmounts = observableList("100", "50", "20", "10", "5", "1")
         val feedRate = observableList("60", "30", "15", "5", "1")
@@ -136,8 +134,8 @@ class ControlView : View() {
         feedAmountCB.selectionModel.select("10")
         feedRateCB.selectionModel.select("5")
 
-        extrude.disableProperty().bind(controller.duetData.map { !it.isExtrudeEnable })
-        retract.disableProperty().bind(controller.duetData.map { !it.isRetractEnable })
+        extrude.disableProperty().bind(duetData.map { !it.isExtrudeEnable })
+        retract.disableProperty().bind(duetData.map { !it.isRetractEnable })
 
         // TODO: Make these configurable.
         val bedTemps = observableList(0, 55, 60, 65, 70, 80, 90, 110, 120)
@@ -155,14 +153,14 @@ class ControlView : View() {
 
         bedActiveTemp.setOnAction {
             val selected = bedActiveTemp.selectionModel.selectedItem
-            if (controller.duetData.get().temps.bed.active != selected) {
+            if (duetData.value.temps.bed.active != selected) {
                 DuetWifi.instance.sendCmd("M140 S$selected")
             }
         }
 
         toolActiveTemp.setOnAction {
             val selected = toolActiveTemp.selectionModel.selectedItem
-            if (controller.duetData.get().temps.tools.activeTemperature(0) != selected) {
+            if (duetData.value.temps.tools.activeTemperature(0) != selected) {
                 // TODO: Support more extruder
                 DuetWifi.instance.sendCmd("G10 P0 S$selected")
             }
@@ -170,7 +168,7 @@ class ControlView : View() {
 
         toolStandbyTemp.setOnAction {
             val selected = toolStandbyTemp.selectionModel.selectedItem
-            if (controller.duetData.get().temps.tools.standbyTemperature(0) != selected) {
+            if (duetData.value.temps.tools.standbyTemperature(0) != selected) {
                 // TODO: Support more extruder
                 DuetWifi.instance.sendCmd("G10 P0 R$selected")
             }
@@ -181,6 +179,7 @@ class ControlView : View() {
         fanSlider.majorTickUnit = 1.0
         fanSliderAmount.bind(fanSlider.valueProperty().map { "${it.toInt()} %" })
 
+        // TODO: refactor axes.
         xLeft.setOnAction {
             DuetWifi.instance.sendCmd("M120", "G91", "G1 X-${xAmount.value} F6000", "M121")
         }

@@ -10,11 +10,12 @@
     </padding>
 
     <HBox spacing="10" GridPane.hgrow="ALWAYS" GridPane.columnSpan="4">
-        <ProgressBar progress="0.0" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
-        <Label>0%</Label>
+        <ProgressBar fx:id="progressBar" progress="0.0" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+        <Label fx:id="progressLabel">0%</Label>
     </HBox>
 
-    <TitledPane text="Print Control" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1" maxHeight="Infinity">
+    <TitledPane text="Print Control" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
+                maxHeight="Infinity">
         <VBox alignment="CENTER" spacing="10">
             <Button styleClass="warning">
                 <graphic>
@@ -25,7 +26,8 @@
             <CheckBox>Enable Auto-Sleep</CheckBox>
         </VBox>
     </TitledPane>
-    <TitledPane text="Z Baby Stepping" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1" GridPane.columnIndex="1">
+    <TitledPane text="Z Baby Stepping" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
+                GridPane.columnIndex="1">
         <VBox spacing="10" alignment="CENTER">
             <HBox spacing="5">
                 <Label>Current Offset :</Label>
@@ -98,7 +100,8 @@
                 </HBox>
             </TitledPane>
         </HBox>-->
-    <TitledPane text="Collected Data" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="2" GridPane.columnSpan="3"
+    <TitledPane text="Collected Data" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="2"
+                GridPane.columnSpan="3"
                 GridPane.hgrow="ALWAYS" GridPane.fillWidth="true">
         <GridPane vgap="5" hgap="5">
             <padding>
@@ -117,13 +120,14 @@
                 Duration
             </Label>
 
-            <Label GridPane.rowIndex="1" GridPane.halignment="CENTER">10s</Label>
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10s</Label>
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10s</Label>
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10s</Label>
+            <Label fx:id="warmUp" GridPane.rowIndex="1" GridPane.halignment="CENTER">10s</Label>
+            <Label fx:id="currentLayer" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10s</Label>
+            <Label fx:id="lastLayer" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10s</Label>
+            <Label fx:id="printDuration" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10s</Label>
         </GridPane>
     </TitledPane>
-    <TitledPane text="Estimations" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="3" GridPane.columnSpan="3">
+    <TitledPane text="Estimations" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="3"
+                GridPane.columnSpan="3">
         <GridPane vgap="5" hgap="5">
             <padding>
                 <Insets top="10" left="5" bottom="10" right="5"/>
@@ -143,9 +147,9 @@
 
             <Label GridPane.rowIndex="1" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Time Left
             </Label>
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10m 09s</Label>
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10m 09s</Label>
-            <Label GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10m 09s</Label>
+            <Label fx:id="timeLeftFilament" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10m 09s</Label>
+            <Label fx:id="timeLeftFile" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10m 09s</Label>
+            <Label fx:id="timeLeftLayer" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10m 09s</Label>
 
             <Label GridPane.rowIndex="2" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Est. End Time
             </Label>
@@ -155,7 +159,8 @@
         </GridPane>
     </TitledPane>
 
-    <TitledPane text="File Information" collapsible="false" alignment="BASELINE_CENTER" GridPane.columnIndex="3" GridPane.rowIndex="1"
+    <TitledPane text="File Information" collapsible="false" alignment="BASELINE_CENTER" GridPane.columnIndex="3"
+                GridPane.rowIndex="1"
                 GridPane.rowSpan="3" maxWidth="180" GridPane.valignment="TOP">
         <VBox spacing="10">
             <VBox spacing="5">

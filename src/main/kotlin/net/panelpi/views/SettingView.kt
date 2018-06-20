@@ -3,7 +3,7 @@ package net.panelpi.views
 import javafx.scene.Parent
 import javafx.scene.control.Slider
 import mu.KLogging
-import net.panelpi.DuetWifi
+import net.panelpi.duetwifi.DuetWifi
 import tornadofx.*
 import java.io.PrintWriter
 import java.nio.file.Paths

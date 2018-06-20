@@ -1,9 +1,16 @@
 package net.panelpi
 
+import io.reactivex.Observable
+import io.reactivex.plugins.RxJavaPlugins.onError
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import org.fxmisc.easybind.EasyBind
+import tornadofx.*
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 fun String.appendCheckSum(): String {
     val checkSum = if (isEmpty()) {
@@ -28,4 +35,25 @@ inline fun <T> Lock.tryWithLock(action: () -> T): T? {
     } else {
         null
     }
+}
+
+fun <T, R> Observable<T>.fold(accumulator: R, folderFun: (R, T) -> Unit): R {
+    buffer(1, TimeUnit.SECONDS).subscribe({
+        if (it.isNotEmpty()) {
+            runLater {
+                it.fold(accumulator) { list, item ->
+                    folderFun.invoke(list, item)
+                    list
+                }
+            }
+        }
+    }, ::onError)
+    return accumulator
+}
+
+class ConcurrentBox<out T>(val content: T) {
+    val lock = ReentrantReadWriteLock()
+
+    inline fun <R> concurrent(block: T.() -> R): R = lock.read { block(content) }
+    inline fun <R> exclusive(block: T.() -> R): R = lock.write { block(content) }
 }

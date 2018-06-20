@@ -6,15 +6,13 @@ import javafx.scene.control.Label
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.BorderPane
-import net.panelpi.DuetWifi
-import net.panelpi.controllers.DuetController
+import net.panelpi.duetwifi.DuetWifi
 import net.panelpi.map
 import tornadofx.*
 
 class MainView : View() {
     override val root: Parent by fxml()
-    private val controller: DuetController by inject()
-
+    private val duetData = DuetWifi.instance.duetData
     private val status: Label by fxid()
     private val centerPane: BorderPane by fxid()
     private val printerName: Label by fxid()
@@ -34,11 +32,11 @@ class MainView : View() {
 
     init {
         // Status icon
-        status.bind(controller.duetData.map { it.status })
-        status.styleProperty().bind(controller.duetData.map { "-fx-background-color: ${it.status.color}" })
+        status.bind(duetData.map { it.status })
+        status.styleProperty().bind(duetData.map { "-fx-background-color: ${it.status.color}" })
 
         // Printer name
-        printerName.bind(controller.duetData.map { it.name })
+        printerName.bind(duetData.map { it.name })
 
         // Menu buttons
         val allButton = mapOf(
