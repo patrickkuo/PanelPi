@@ -4,9 +4,11 @@ import mu.KotlinLogging
 import tornadofx.*
 import java.lang.reflect.InvocationTargetException
 import java.net.Proxy
+import java.time.LocalDateTime
 import javax.json.Json
 import javax.json.JsonNumber
 import javax.json.JsonObject
+import javax.json.JsonString
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.memberProperties
@@ -18,7 +20,7 @@ private val logger = KotlinLogging.logger {}
 inline fun <reified T : Any> JsonObject.parseAs(): T = parseAs(T::class)
 
 fun <T : Any> JsonObject.parseAs(clazz: KClass<T>): T {
-    kotlin.require(clazz.isData) { "Only Kotlin data classes can be parsed. Offending: ${clazz.qualifiedName}" }
+    require(clazz.isData) { "Only Kotlin data classes can be parsed. Offending: ${clazz.qualifiedName}" }
     val constructor = clazz.primaryConstructor!!
     val args = constructor.parameters.filterNot { it.isOptional && !containsKey(it.name!!) }.associateBy({ it }) { param ->
         // Get the matching property for this parameter
@@ -40,6 +42,7 @@ private fun JsonObject.getSingleValue(path: String, type: KType): Any? {
         Int::class -> getInt(path)
         Long::class -> getLong(path)
         Double::class -> getDouble(path)
+        LocalDateTime::class -> LocalDateTime.parse(getString(path))
         Boolean::class -> try {
             getBoolean(path)
         } catch (e: ClassCastException) {
@@ -64,7 +67,7 @@ private fun JsonObject.getCollectionValue(path: String, type: KType): Collection
     val values: List<Any> = try {
         val array = getJsonArray(path)
         when (elementClass) {
-            String::class -> array.getValuesAs<String, JsonObject> { it.getString() }
+            String::class -> array.getValuesAs<String, JsonString> { it.string }
             Int::class -> array.getValuesAs<Int, JsonNumber> { it.intValue() }
             Long::class -> array.getValuesAs<Long, JsonNumber> { it.longValue() }
             Double::class -> array.getValuesAs<Double, JsonNumber> { it.doubleValue() }

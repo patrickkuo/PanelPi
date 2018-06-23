@@ -1,14 +1,13 @@
 package net.panelpi
 
-import io.reactivex.Observable
-import io.reactivex.plugins.RxJavaPlugins.onError
+import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import org.fxmisc.easybind.EasyBind
-import tornadofx.*
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.Lock
+import java.time.Duration
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import javax.json.Json
+import javax.json.JsonObject
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
@@ -25,30 +24,14 @@ fun <A, B> ObservableValue<out A>.map(function: (A) -> B): ObservableValue<B> = 
 
 fun <A, B> ObservableList<out A>.map(function: (A) -> B): ObservableList<B> = EasyBind.map(this, function)
 
-inline fun <T> Lock.tryWithLock(action: () -> T): T? {
-    return if (tryLock()) {
-        try {
-            return action()
-        } finally {
-            unlock()
+fun <A, B> ObservableList<out A>.fold(initial: B, folderFunction: (B, A) -> B): ObservableValue<B> {
+    return Bindings.createObjectBinding({
+        var current = initial
+        forEach {
+            current = folderFunction(current, it)
         }
-    } else {
-        null
-    }
-}
-
-fun <T, R> Observable<T>.fold(accumulator: R, folderFun: (R, T) -> Unit): R {
-    buffer(1, TimeUnit.SECONDS).subscribe({
-        if (it.isNotEmpty()) {
-            runLater {
-                it.fold(accumulator) { list, item ->
-                    folderFun.invoke(list, item)
-                    list
-                }
-            }
-        }
-    }, ::onError)
-    return accumulator
+        current
+    }, arrayOf(this))
 }
 
 class ConcurrentBox<out T>(val content: T) {
@@ -56,4 +39,23 @@ class ConcurrentBox<out T>(val content: T) {
 
     inline fun <R> concurrent(block: T.() -> R): R = lock.read { block(content) }
     inline fun <R> exclusive(block: T.() -> R): R = lock.write { block(content) }
+}
+
+val Number.millis: Duration get() = Duration.ofMillis(this.toLong())
+val Number.seconds: Duration get() = Duration.ofSeconds(this.toLong())
+val Number.minutes: Duration get() = Duration.ofMinutes(this.toLong())
+val Number.hours: Duration get() = Duration.ofHours(this.toLong())
+
+operator fun JsonObject.plus(other: JsonObject): JsonObject {
+    val builder = Json.createObjectBuilder()
+    forEach { t, u -> builder.add(t, u) }
+    other.forEach { t, u -> builder.add(t, u) }
+    return builder.build()
+}
+
+operator fun JsonObject.plus(other: Pair<String, String>): JsonObject {
+    val builder = Json.createObjectBuilder()
+    forEach { t, u -> builder.add(t, u) }
+    builder.add(other.first, other.second)
+    return builder.build()
 }

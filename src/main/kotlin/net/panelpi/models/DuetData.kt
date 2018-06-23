@@ -1,4 +1,6 @@
-package net.panelpi.duetwifi
+package net.panelpi.models
+
+import java.time.LocalDateTime
 
 data class DuetData(val status: Status = Status.X,
                     private val coords: Coordinates = Coordinates(),
@@ -50,6 +52,20 @@ data class Tools(private val active: List<List<Int>> = emptyList(), private val 
 }
 
 data class TimesLeft(val file: Double, val filament: Double, val layer: Double)
+
+sealed class SDItem()
+data class JsonSDFolder(val files: List<String>)
+data class SDFolder(val name: String, val files: List<SDItem>) : SDItem()
+data class SDFile(val fileName: String,
+                  val size: Long,
+                  val lastModified: LocalDateTime,
+                  val height: Double,
+                  val firstLayerHeight: Double,
+                  val layerHeight: Double,
+                  val printTime: Int,
+                  val filament: List<Double>,
+                  val generatedBy: String) : SDItem()
+
 
 enum class Status(private val value: String, val color: String) {
     I("Idle", "SILVER"),

@@ -5,14 +5,15 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.*
-import net.panelpi.duetwifi.DuetWifi
+import net.panelpi.controllers.DuetController
 import net.panelpi.map
 import tornadofx.*
 
 class ControlView : View() {
     override val root: Parent by fxml()
 
-    private val duetData = DuetWifi.instance.duetData
+    private val duetController: DuetController by inject()
+    private val duetData = duetController.data
 
     private val homeX: Button by fxid()
     private val homeY: Button by fxid()
@@ -25,9 +26,9 @@ class ControlView : View() {
     private val gridComp: Button by fxid()
     private val homeAll: Button by fxid()
 
-    private val xAmount: ComboBox<String> by fxid()
-    private val yAmount: ComboBox<String> by fxid()
-    private val zAmount: ComboBox<String> by fxid()
+    private val xAmount: ComboBox<Double> by fxid()
+    private val yAmount: ComboBox<Double> by fxid()
+    private val zAmount: ComboBox<Double> by fxid()
 
     private val xLeft: Button by fxid()
     private val xRight: Button by fxid()
@@ -78,16 +79,12 @@ class ControlView : View() {
         offButton.toggleGroup = toggleGroup
 
         onButton.setOnAction {
-            if (duetData.value?.params?.atxPower == false) {
-                DuetWifi.instance.sendCmd("M80")
-            }
+            duetController.atxPower(true)
             it.consume()
             onButton.isSelected = duetData.value?.params?.atxPower == true
         }
         offButton.setOnAction {
-            if (duetData.value?.params?.atxPower == true) {
-                DuetWifi.instance.sendCmd("M81")
-            }
+            duetController.atxPower(false)
             it.consume()
             offButton.isSelected = duetData.value?.params?.atxPower == false
         }
@@ -95,23 +92,19 @@ class ControlView : View() {
         bedComp.setOnAction {
             runAsync {
                 bedComp.isDisable = true
-                DuetWifi.instance.sendCmd("G32")
+                duetController.bedCompensation()
             }.setOnSucceeded {
                 bedComp.isDisable = false
             }
         }
         homeAll.setOnAction {
-            runAsync {
-                DuetWifi.instance.sendCmd("G28")
-            }
+            duetController.homeAxis()
         }
         gridComp.setOnAction {
-            runAsync {
-                DuetWifi.instance.sendCmd("G29")
-            }
+            duetController.gridCompensation()
         }
 
-        val amounts = observableList("100", "10", "1", "0.1")
+        val amounts = observableList(100.0, 10.0, 1.0, 0.1)
 
         listOf(xAmount, yAmount, zAmount).forEach {
             it.items = amounts
@@ -154,7 +147,7 @@ class ControlView : View() {
         bedActiveTemp.setOnAction {
             val selected = bedActiveTemp.selectionModel.selectedItem
             if (duetData.value.temps.bed.active != selected) {
-                DuetWifi.instance.sendCmd("M140 S$selected")
+                duetController.setBedTemperature(selected)
             }
         }
 
@@ -162,7 +155,7 @@ class ControlView : View() {
             val selected = toolActiveTemp.selectionModel.selectedItem
             if (duetData.value.temps.tools.activeTemperature(0) != selected) {
                 // TODO: Support more extruder
-                DuetWifi.instance.sendCmd("G10 P0 S$selected")
+                duetController.setToolTemperature(0, selected)
             }
         }
 
@@ -170,7 +163,7 @@ class ControlView : View() {
             val selected = toolStandbyTemp.selectionModel.selectedItem
             if (duetData.value.temps.tools.standbyTemperature(0) != selected) {
                 // TODO: Support more extruder
-                DuetWifi.instance.sendCmd("G10 P0 R$selected")
+                duetController.setToolTemperature(0, selected, standby = true)
             }
         }
 
@@ -181,23 +174,23 @@ class ControlView : View() {
 
         // TODO: refactor axes.
         xLeft.setOnAction {
-            DuetWifi.instance.sendCmd("M120", "G91", "G1 X-${xAmount.value} F6000", "M121")
+            duetController.moveAxis("X", -(xAmount.value))
         }
         xRight.setOnAction {
-            DuetWifi.instance.sendCmd("M120", "G91", "G1 X${xAmount.value} F6000", "M121")
+            duetController.moveAxis("X", xAmount.value)
         }
 
         yLeft.setOnAction {
-            DuetWifi.instance.sendCmd("M120", "G91", "G1 Y-${yAmount.value} F6000", "M121")
+            duetController.moveAxis("Y", -(yAmount.value))
         }
         yRight.setOnAction {
-            DuetWifi.instance.sendCmd("M120", "G91", "G1 Y${yAmount.value} F6000", "M121")
+            duetController.moveAxis("Y", yAmount.value)
         }
         zLeft.setOnAction {
-            DuetWifi.instance.sendCmd("M120", "G91", "G1 Z-${zAmount.value} F6000", "M121")
+            duetController.moveAxis("Z", -(zAmount.value))
         }
         zRight.setOnAction {
-            DuetWifi.instance.sendCmd("M120", "G91", "G1 Z${zAmount.value} F6000", "M121")
+            duetController.moveAxis("Z", zAmount.value)
         }
     }
 
@@ -207,7 +200,7 @@ class ControlView : View() {
             homeButton.toggleClass("warning", !newValue)
         }
         homeButton.setOnMouseClicked {
-            DuetWifi.instance.sendCmd("G28 $axisName")
+            duetController.homeAxis(axisName)
         }
     }
 

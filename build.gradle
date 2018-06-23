@@ -40,10 +40,7 @@ dependencies {
     compile 'com.pi4j:pi4j-core:1.2-SNAPSHOT'
     compile 'com.pi4j:pi4j-gpio-extension:1.2-SNAPSHOT'
     compile 'org.json:json:20180130'
-    compile 'io.reactivex.rxjava2:rxkotlin:2.1.0'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'no.tornado:tornadofx:1.7.16'
-    compile 'com.github.thomasnield:rxkotlinfx:2.2.2'
     compile 'org.fxmisc.easybind:easybind:1.0.3'
     compile 'de.jensd:fontawesomefx-fontawesome:4.7.0'
 

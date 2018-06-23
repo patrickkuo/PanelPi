@@ -4,13 +4,15 @@ import javafx.beans.property.SimpleDoubleProperty
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
-import net.panelpi.duetwifi.DuetWifi
+import net.panelpi.controllers.DuetController
 import net.panelpi.map
 import tornadofx.*
 
 class StatusView : View() {
     override val root: Parent by fxml()
-
+    private val duetController: DuetController by inject()
+    private val duetData = duetController.data
+    
     private val progressBar: ProgressBar by fxid()
     private val progressLabel: Label by fxid()
 
@@ -24,7 +26,6 @@ class StatusView : View() {
     private val printDuration: Label by fxid()
 
 
-    private val duetData = DuetWifi.instance.duetData
     private val currentLayerTime = duetData.map { it.currentLayerTime }
     private val lastLayerTime = SimpleDoubleProperty()
 
@@ -32,16 +33,16 @@ class StatusView : View() {
         progressBar.bind(duetData.map { it.fractionPrinted / 100 })
         progressLabel.bind(duetData.map { "${it.fractionPrinted}%" })
 
-        timeLeftFilament.bind(duetData.map { it.timesLeft?.filament ?: "N/A" })
-        timeLeftFile.bind(duetData.map { it.timesLeft?.file ?: "N/A" })
-        timeLeftLayer.bind(duetData.map { it.timesLeft?.layer ?: "N/A" })
+        timeLeftFilament.bind(duetData.map { it.timesLeft?.filament ?: "n/a" })
+        timeLeftFile.bind(duetData.map { it.timesLeft?.file ?: "n/a" })
+        timeLeftLayer.bind(duetData.map { it.timesLeft?.layer ?: "n/a" })
 
-        warmUp.bind(duetData.map { it.warmUpDuration ?: "N/A" })
-        currentLayer.bind(currentLayerTime.map { it ?: "N/A" })
+        warmUp.bind(duetData.map { it.warmUpDuration ?: "n/a" })
+        currentLayer.bind(currentLayerTime.map { it ?: "n/a" })
 
         currentLayerTime.addListener { _, old, _ -> old?.let(lastLayerTime::set) }
 
-        lastLayer.bind(lastLayerTime.map { it ?: "N/A" })
-        printDuration.bind(duetData.map { it.printDuration ?: "N/A" })
+        lastLayer.bind(lastLayerTime.map { it ?: "n/a" })
+        printDuration.bind(duetData.map { it.printDuration ?: "n/a" })
     }
 }
