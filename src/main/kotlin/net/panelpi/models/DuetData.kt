@@ -53,10 +53,13 @@ data class Tools(private val active: List<List<Int>> = emptyList(), private val 
 
 data class TimesLeft(val file: Double, val filament: Double, val layer: Double)
 
-sealed class SDItem()
+sealed class SDItem {
+    abstract val fileName: String
+}
+
 data class JsonSDFolder(val files: List<String>)
-data class SDFolder(val name: String, val files: List<SDItem>) : SDItem()
-data class SDFile(val fileName: String,
+data class SDFolder(override val fileName: String, val files: List<SDItem>) : SDItem()
+data class SDFile(override val fileName: String,
                   val size: Long,
                   val lastModified: LocalDateTime,
                   val height: Double,
@@ -64,7 +67,9 @@ data class SDFile(val fileName: String,
                   val layerHeight: Double,
                   val printTime: Int,
                   val filament: List<Double>,
-                  val generatedBy: String) : SDItem()
+                  val generatedBy: String) : SDItem() {
+    val layerHeights: Pair<Double, Double> = Pair(firstLayerHeight, layerHeight)
+}
 
 
 enum class Status(private val value: String, val color: String) {

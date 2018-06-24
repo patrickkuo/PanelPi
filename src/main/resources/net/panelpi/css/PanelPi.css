@@ -80,13 +80,17 @@
     -fx-pref-width: 110;
 }
 
-.extrude-retract.primary > .glyph-icon {
+.primary > .glyph-icon {
     -fx-text-fill: white;
     -fx-fill: white;
 }
 
-.fixWidth {
-    -fx-pref-width: 120;
+.large-icon > .glyph-icon {
+    -glyph-size: 30px;
+}
+
+.large-icon.button {
+    -fx-padding: 2 2 2 2;
 }
 
 .bold.label {
@@ -113,10 +117,25 @@
 
 .button {
     -fx-padding: 8 15 8 15;
-    -fx-focus-traversable: false;
 }
 
 .button, .label {
     -fx-font-family: 'sans-serif';
     -fx-font-size: 16;
+}
+
+.popupPane {
+    -fx-padding: 5 5 5 5;
+    -fx-border-color: lightgray;
+    -fx-background-color: #f4f4f4;
+}
+
+.tree-table-view .column-header > .label {
+    -fx-font-size: 13;
+    -fx-text-fill: #428bca;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
+    -fx-background: #daedf6;
+    -fx-table-cell-border-color: #daedf6;
 }

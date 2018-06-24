@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -17,12 +18,18 @@
     <TitledPane text="Print Control" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
                 maxHeight="Infinity">
         <VBox alignment="CENTER" spacing="10">
-            <Button styleClass="warning">
+            <Button fx:id="pauseResume" styleClass="warning">
                 <graphic>
                     <FontAwesomeIconView glyphName="PAUSE" style="-fx-fill: WHITE"/>
                 </graphic>
                 Pause Print
             </Button>
+            <!--            <Button fx:id="printAnother" styleClass="success">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="REFRESH" style="-fx-fill: WHITE"/>
+                            </graphic>
+                            Print Another
+                        </Button>-->
             <CheckBox>Enable Auto-Sleep</CheckBox>
         </VBox>
     </TitledPane>
@@ -62,44 +69,28 @@
     </TitledPane>
     <Pane GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
 
-    <!--<TitledPane collapsible="false" alignment="BASELINE_CENTER">
-        <graphic>
-            <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                <Label GridPane.fillWidth="true" GridPane.halignment="CENTER">Speed Factor</Label>
-            </GridPane>
-        </graphic>
-        <VBox>
-            <padding>
-                <Insets left="10" top="10" bottom="10" right="10"/>
-            </padding>
-            <Slider/>
-        </VBox>
-    </TitledPane>-->
-
-    <!--        <HBox spacing="10">
-            <TitledPane collapsible="false" alignment="BASELINE_CENTER" HBox.hgrow="ALWAYS">
+    <TitledPane text="Controls" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
+                GridPane.columnIndex="2" maxHeight="Infinity">
+        <GridPane vgap="10" hgap="10" maxHeight="Infinity">
+            <Button fx:id="speedFactor" styleClass="primary, large-icon" GridPane.valignment="CENTER"
+                    GridPane.vgrow="ALWAYS">
                 <graphic>
-                    <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                        <Label GridPane.fillWidth="true" GridPane.halignment="CENTER">Fan Control</Label>
-                    </GridPane>
+                    <MaterialDesignIconView glyphName="SPEEDOMETER" style="-fx-fill: WHITE"/>
                 </graphic>
-                <HBox spacing="5">
-                    <Label>Fan:</Label>
-                    <Slider HBox.hgrow="ALWAYS"/>
-                </HBox>
-            </TitledPane>
-            <TitledPane collapsible="false" alignment="BASELINE_CENTER" HBox.hgrow="ALWAYS">
+            </Button>
+            <Button fx:id="fanControl" styleClass="primary, large-icon" GridPane.columnIndex="1" GridPane.valignment="CENTER"
+                    GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER">
                 <graphic>
-                    <GridPane hgap="10" styleClass="small-pane" GridPane.fillWidth="true">
-                        <Label GridPane.fillWidth="true" GridPane.halignment="CENTER">Extrusion Factors</Label>
-                    </GridPane>
+                    <MaterialDesignIconView glyphName="FAN" style="-fx-fill: WHITE"/>
                 </graphic>
-                <HBox spacing="5">
-                    <Label>Extruder 0:</Label>
-                    <Slider HBox.hgrow="ALWAYS"/>
-                </HBox>
-            </TitledPane>
-        </HBox>-->
+            </Button>
+            <Button fx:id="extrusionFactor" styleClass="primary, large-icon" GridPane.columnIndex="2" GridPane.valignment="CENTER">
+                <graphic>
+                    <MaterialDesignIconView glyphName="PERCENT" style="-fx-fill: WHITE"/>
+                </graphic>
+            </Button>
+        </GridPane>
+    </TitledPane>
     <TitledPane text="Collected Data" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="2"
                 GridPane.columnSpan="3"
                 GridPane.hgrow="ALWAYS" GridPane.fillWidth="true">
@@ -120,10 +111,10 @@
                 Duration
             </Label>
 
-            <Label fx:id="warmUp" GridPane.rowIndex="1" GridPane.halignment="CENTER">10s</Label>
-            <Label fx:id="currentLayer" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10s</Label>
-            <Label fx:id="lastLayer" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10s</Label>
-            <Label fx:id="printDuration" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10s</Label>
+            <Label fx:id="warmUp" GridPane.rowIndex="1" GridPane.halignment="CENTER"/>
+            <Label fx:id="currentLayer" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER"/>
+            <Label fx:id="lastLayer" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
+            <Label fx:id="printDuration" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER"/>
         </GridPane>
     </TitledPane>
     <TitledPane text="Estimations" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="3"
@@ -147,15 +138,18 @@
 
             <Label GridPane.rowIndex="1" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Time Left
             </Label>
-            <Label fx:id="timeLeftFilament" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="CENTER">10m 09s</Label>
-            <Label fx:id="timeLeftFile" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER">10m 09s</Label>
-            <Label fx:id="timeLeftLayer" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER">10m 09s</Label>
-
+            <Label fx:id="timeLeftFilament" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                   GridPane.halignment="CENTER"/>
+            <Label fx:id="timeLeftFile" GridPane.rowIndex="1" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
+            <Label fx:id="timeLeftLayer" GridPane.rowIndex="1" GridPane.columnIndex="3" GridPane.halignment="CENTER"/>
             <Label GridPane.rowIndex="2" GridPane.halignment="CENTER" style="-fx-font-weight: bold">Est. End Time
             </Label>
-            <Label GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.halignment="CENTER">22:11:09</Label>
-            <Label GridPane.rowIndex="2" GridPane.columnIndex="2" GridPane.halignment="CENTER">22:11:09</Label>
-            <Label GridPane.rowIndex="2" GridPane.columnIndex="3" GridPane.halignment="CENTER">22:11:09</Label>
+            <Label fx:id="timeLeftFilamentTime" GridPane.rowIndex="2" GridPane.columnIndex="1"
+                   GridPane.halignment="CENTER"/>
+            <Label fx:id="timeLeftFileTime" GridPane.rowIndex="2" GridPane.columnIndex="2"
+                   GridPane.halignment="CENTER"/>
+            <Label fx:id="timeLeftLayerTime" GridPane.rowIndex="2" GridPane.columnIndex="3"
+                   GridPane.halignment="CENTER"/>
         </GridPane>
     </TitledPane>
 
@@ -165,28 +159,27 @@
         <VBox spacing="10">
             <HBox spacing="5">
                 <Label style="-fx-font-weight: bold">File:</Label>
-                <Label>File.gcode</Label>
+                <Label fx:id="fileName"/>
             </HBox>
             <HBox spacing="5">
                 <Label style="-fx-font-weight: bold">Size:</Label>
-                <Label>5.4 MiB</Label>
+                <Label fx:id="fileSize"/>
             </HBox>
             <VBox spacing="5">
-
                 <Label style="-fx-font-weight: bold">Object Height:</Label>
-                <Label>72.38 mm</Label>
+                <Label fx:id="objectHeight"/>
             </VBox>
             <VBox spacing="5">
                 <Label style="-fx-font-weight: bold">Layer Height:</Label>
-                <Label wrapText="true">0.18 mm / 0.2 mm</Label>
+                <Label wrapText="true" fx:id="layerHeight"/>
             </VBox>
             <VBox spacing="5">
                 <Label style="-fx-font-weight: bold">Filament Usage:</Label>
-                <Label>7770.5 mm</Label>
+                <Label fx:id="filamentUsage"/>
             </VBox>
             <VBox spacing="5">
                 <Label style="-fx-font-weight: bold">Generated by:</Label>
-                <Label wrapText="true">Simplify3D(R) Version 4.0.0</Label>
+                <Label wrapText="true" fx:id="generatedBy"/>
             </VBox>
         </VBox>
     </TitledPane>

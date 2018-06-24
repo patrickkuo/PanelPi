@@ -15,9 +15,14 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
-private val logger = KotlinLogging.logger {}
+val logger = KotlinLogging.logger {}
 
-inline fun <reified T : Any> JsonObject.parseAs(): T = parseAs(T::class)
+inline fun <reified T : Any> JsonObject.parseAs(): T? = try {
+    parseAs(T::class)
+} catch (e: Exception) {
+    logger.debug(e) { "Error parsing ${T::class.simpleName}" }
+    null
+}
 
 fun <T : Any> JsonObject.parseAs(clazz: KClass<T>): T {
     require(clazz.isData) { "Only Kotlin data classes can be parsed. Offending: ${clazz.qualifiedName}" }

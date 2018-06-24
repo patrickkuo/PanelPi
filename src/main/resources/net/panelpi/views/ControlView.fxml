@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -85,22 +86,30 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="homeAll" styleClass="primary, fixWidth" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
-                Home All
+            <Button fx:id="homeAll" styleClass="primary, large-icon" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
+                <graphic>
+                    <MaterialDesignIconView glyphName="HOME_VARIANT"/>
+                </graphic>
             </Button>
-            <Button fx:id="bedComp" styleClass="primary, fixWidth" GridPane.columnIndex="4" GridPane.rowIndex="1"
-                    GridPane.halignment="RIGHT">Bed
-                Comp
+            <Button fx:id="bedComp" styleClass="primary, large-icon" GridPane.columnIndex="4" GridPane.rowIndex="1"
+                    GridPane.halignment="RIGHT">
+                <graphic>
+                    <MaterialDesignIconView glyphName="VECTOR_SQUARE"/>
+                </graphic>
             </Button>
-            <Button fx:id="gridComp" styleClass="primary, fixWidth" GridPane.columnIndex="4" GridPane.rowIndex="2"
+            <Button fx:id="gridComp" styleClass="primary, large-icon" GridPane.columnIndex="4" GridPane.rowIndex="2"
                     GridPane.hgrow="ALWAYS"
-                    GridPane.fillWidth="true" GridPane.halignment="RIGHT">Grid Comp
+                    GridPane.fillWidth="true" GridPane.halignment="RIGHT">
+                <graphic>
+                    <MaterialDesignIconView glyphName="GRID"/>
+                </graphic>
             </Button>
 
         </GridPane>
     </TitledPane>
 
-    <TitledPane text="Extruder" collapsible="false" GridPane.columnIndex="1" GridPane.valignment="TOP" alignment="BASELINE_CENTER">
+    <TitledPane text="Extruder" collapsible="false" GridPane.columnIndex="1" GridPane.valignment="TOP"
+                alignment="BASELINE_CENTER">
         <GridPane hgap="10" vgap="10">
             <Label GridPane.halignment="RIGHT">Feed Amount :</Label>
             <ComboBox fx:id="feedAmountCB" GridPane.columnIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"

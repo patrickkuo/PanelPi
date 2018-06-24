@@ -4,6 +4,15 @@ import com.pi4j.io.serial.*
 import mu.KLogging
 import net.panelpi.ConcurrentBox
 import net.panelpi.appendCheckSum
+import net.panelpi.models.DuetData
+import net.panelpi.parseAs
+import net.panelpi.toJson
+
+fun main(args: Array<String>) {
+    val v = "{\"status\":\"I\",\"coords\":{\"axesHomed\":[1,1,1],\"xyz\":[150.000,150.000,5.000],\"machine\":[150.000\u0000,150.005.000],\"extr\":[0.0]},\"currentTool\":0,\"params\":{\"atxPower\":1,\"fanPercent\":[0,100,100,0,0,0,0,0,0],\"speedFactor\":100.0,\"extrFactors\":[100.0],\"babystep\":0.000},\"sensors\":{\"probeValue\":0,\"fanRPM\":0},\"temps\":{\"bed\":{\"current\":27.2,\"active\":0.0,\"state\":0,\"heater\":1},\"current\":[27.1,27.2,2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],\"state\":[2,0,0,0,0,0,0,0],\"heads\":{\"current\":[],\"active\":[],\"standby\":[],\"state\":[]},\"tools\":{\"active\":[[0.0]],\"standby\":[[0.0]]},\"extra\":[{\"name\":\"MCU\",\"temp\":35.4}]},\"time\":1955.0,\"currentLayer\":0,\"currentLayerTime\":0.0,\"extrRaw\":[0.0],\"fractionPrinted\":0.0,\"firstLayerDuration\":0.0,\"firstLayerHeight\":0.00,\"printDuration\":0.0,\"warmUpDuration\":0.0,\"timesLeft\":{\"file\":0.0,\"filament\":0.0,\"layer\":0.0},\"seq\":1,\"resp\":\"\"}"
+    v.toJson()?.parseAs<DuetData>()
+}
+
 
 class DuetWifi {
     companion object : KLogging()
@@ -64,6 +73,7 @@ class DevDuetIO : DuetIO() {
         private const val updates = "{\"status\":\"I\",\"coords\":{\"axesHomed\":[0,1,0],\"extr\":[7971.1],\"xyz\":[141.119,290.000,-122.167]},\"currentTool\":0,\"params\":{\"atxPower\":1,\"fanPercent\":[0.00,100.00,100.00,0.00,0.00,0.00,0.00,0.00,0.00],\"speedFactor\":100.00,\"extrFactors\":[100.00],\"babystep\":0.150},\"sensors\":{\"probeValue\":0,\"fanRPM\":0},\"temps\":{\"bed\":{\"current\":35.9,\"active\":0.0,\"state\":2,\"heater\":1},\"current\":[24.4,35.9,2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],\"state\":[2,2,0,0,0,0,0,0],\"heads\":{\"current\":[],\"active\":[],\"standby\":[],\"state\":[]},\"tools\":{\"active\":[[0.0]],\"standby\":[[0.0]]},\"extra\":[{\"name\":\"MCU\",\"temp\":33.1}]},\"time\":24321.0,\"currentLayer\":0,\"currentLayerTime\":0.0,\"extrRaw\":[7971.1],\"fractionPrinted\":0.0,\"firstLayerDuration\":0.0,\"firstLayerHeight\":0.18,\"printDuration\":0.0,\"warmUpDuration\":0.0,\"timesLeft\":{\"file\":0.0,\"filament\":0.0,\"layer\":0.0},\"seq\":25,\"resp\":\"\"}"
         private const val dir1 = "{\"dir\":\"0:/gcodes/\",\"first\":0,\"files\":[\"file1.gcode\",\"file2.gcode\", \"*test\"],\"next\":0,\"err\":0}"
         private const val file = "{\"err\":0,\"size\":35498176,\"lastModified\":\"2018-06-22T13:52:28\",\"height\":144.98,\"firstLayerHeight\":0.20,\"layerHeight\":0.20,\"printTime\":14400,\"filament\":[45914.7],\"generatedBy\":\"Simplify3D(R) Version 4.0.0\"}"
+        private const val currentFile = "{\"err\":0,\"size\":35498176,\"lastModified\":\"2018-06-22T13:52:28\",\"height\":144.98,\"firstLayerHeight\":0.20,\"layerHeight\":0.20,\"printTime\":14400,\"filament\":[45914.7],\"generatedBy\":\"Simplify3D(R) Version 4.0.0\",\"fileName\":\"current file\"}"
         private const val dir2 = "{\"dir\":\"gcodes/test\",\"first\":0,\"files\":[\"file3.gcode\"],\"next\":0,\"err\":0}"
     }
 
@@ -77,6 +87,7 @@ class DevDuetIO : DuetIO() {
             lines.contains("M36 /gcodes/file1.gcode") -> file
             lines.contains("M36 /gcodes/file2.gcode") -> file
             lines.contains("M36 /gcodes/test/file3.gcode") -> file
+            lines.contains("M36") -> currentFile
             else -> ""
         }
     }

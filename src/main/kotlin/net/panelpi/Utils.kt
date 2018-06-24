@@ -3,8 +3,9 @@ package net.panelpi
 import javafx.beans.binding.Bindings
 import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
+import net.panelpi.controllers.DuetController
 import org.fxmisc.easybind.EasyBind
-import java.time.Duration
+import java.io.StringReader
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import javax.json.Json
 import javax.json.JsonObject
@@ -41,11 +42,6 @@ class ConcurrentBox<out T>(val content: T) {
     inline fun <R> exclusive(block: T.() -> R): R = lock.write { block(content) }
 }
 
-val Number.millis: Duration get() = Duration.ofMillis(this.toLong())
-val Number.seconds: Duration get() = Duration.ofSeconds(this.toLong())
-val Number.minutes: Duration get() = Duration.ofMinutes(this.toLong())
-val Number.hours: Duration get() = Duration.ofHours(this.toLong())
-
 operator fun JsonObject.plus(other: JsonObject): JsonObject {
     val builder = Json.createObjectBuilder()
     forEach { t, u -> builder.add(t, u) }
@@ -58,4 +54,11 @@ operator fun JsonObject.plus(other: Pair<String, String>): JsonObject {
     forEach { t, u -> builder.add(t, u) }
     builder.add(other.first, other.second)
     return builder.build()
+}
+
+fun String.toJson(): JsonObject? = try {
+    Json.createReader(StringReader(this)).readObject()
+} catch (e: Throwable) {
+    DuetController.logger.warn(e) { "Error parsing Json response : $this" }
+    null
 }

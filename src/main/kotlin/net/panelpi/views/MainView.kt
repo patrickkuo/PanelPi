@@ -31,6 +31,7 @@ class MainView : View() {
     private val controlView: ControlView by inject()
     private val settingView: SettingView by inject()
     private val comingSoon: ComingSoonView by inject()
+    private val fileView: FileView by inject()
 
     init {
         // Status icon
@@ -45,7 +46,7 @@ class MainView : View() {
                 statusButton to statusView,
                 controlButton to controlView,
                 consoleButton to comingSoon,
-                fileButton to comingSoon,
+                fileButton to fileView,
                 settingButton to settingView)
 
         allButton.forEach { button, view ->

@@ -4,14 +4,12 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import mu.KLogging
 import net.panelpi.duetwifi.DuetWifi
-import net.panelpi.fold
 import net.panelpi.map
 import net.panelpi.models.*
 import net.panelpi.parseAs
 import net.panelpi.plus
+import net.panelpi.toJson
 import tornadofx.*
-import java.io.StringReader
-import javax.json.Json
 import javax.json.JsonObject
 import kotlin.concurrent.timer
 
@@ -23,32 +21,33 @@ class DuetController : Controller() {
 
     private val duet = DuetWifi()
 
-    private val duetDataMessage = observableList(JsonObject.EMPTY_JSON_OBJECT)
-    private val jsonDuetData = duetDataMessage.fold(JsonObject.EMPTY_JSON_OBJECT, JsonObject::plus)
+    //private val duetDataMessage = observableList(JsonObject.EMPTY_JSON_OBJECT)
+    private val jsonDuetData = SimpleObjectProperty(JsonObject.EMPTY_JSON_OBJECT)
 
-    val data: ObservableValue<DuetData> = jsonDuetData.map { it.parseAs<DuetData>() }
-    val _sdData = SimpleObjectProperty<SDFolder>()
+    val data: ObservableValue<DuetData> = jsonDuetData.map { it.parseAs() ?: DuetData() }
+    private val _sdData = SimpleObjectProperty<SDFolder>(SDFolder("gcodes", emptyList()))
     val sdData: ObservableValue<SDFolder> = _sdData
 
-    val _currentFile = SimpleObjectProperty<SDFile>()
-    val currentFile: ObservableValue<SDFile> = _currentFile
+    private val _currentFile = SimpleObjectProperty<SDFile>()
+    val currentFile: ObservableValue<SDFile?> = _currentFile
 
     private val statusObservable = data.map { it.status }
 
     init {
         runAsync {
             val status = duet.sendCmd("M408 S3", resultTimeout = 5000).toJson()
-            Triple(status, getSdData(), getFile())
-        }.ui { (status, sd, currentFile) ->
-            duetDataMessage.addAll(status)
-            _sdData.set(sd)
+            Pair(status, getFile())
+        }.ui { (status, currentFile) ->
+            status?.let { jsonDuetData.set(jsonDuetData.value + it) }
             _currentFile.set(currentFile)
         }
+
+        refreshSDData()
 
         timer(initialDelay = 1000, period = 500) {
             val data = duet.sendCmd("M408 S4", resultTimeout = 5000).toJson()
             runLater {
-                duetDataMessage.addAll(data)
+                data?.let { jsonDuetData.set(jsonDuetData.value + it) }
             }
         }
 
@@ -59,28 +58,22 @@ class DuetController : Controller() {
         }
     }
 
-    fun getSdData(folder: String = "gcodes"): SDFolder {
-        return SDFolder(folder, duet.sendCmd("M20 S2 P/$folder", resultTimeout = 5000).toJson().parseAs<JsonSDFolder>().files.mapNotNull {
+    fun getSdData(folder: String = "gcodes"): SDFolder? {
+        return duet.sendCmd("M20 S2 P/$folder", resultTimeout = 5000).toJson()?.parseAs<JsonSDFolder>()?.files?.sorted()?.mapNotNull {
             if (it.startsWith("*")) {
                 getSdData("$folder/${it.drop(1)}")
             } else {
                 getFile("/$folder/$it")
             }
-        })
+        }?.let { SDFolder(folder.split("/").last(), it) }
     }
 
     fun getFile(path: String? = null): SDFile? {
-        val json = if (path == null) {
+        return if (path == null) {
             duet.sendCmd("M36", resultTimeout = 5000).toJson()
         } else {
-            duet.sendCmd("M36 $path", resultTimeout = 5000).toJson().plus("fileName" to path.split("/").last())
-        }
-        return try {
-            json.parseAs()
-        } catch (e: Throwable) {
-            logger.warn(e) { "Error parsing SDFile." }
-            null
-        }
+            duet.sendCmd("M36 $path", resultTimeout = 5000).toJson()?.plus("fileName" to path.split("/").last())
+        }?.parseAs()
     }
 
     fun moveAxis(axisName: String, amount: Double, speed: Int = 6000) {
@@ -102,11 +95,11 @@ class DuetController : Controller() {
     }
 
     fun gridCompensation() {
-        duet.sendCmd("G29")
+        duet.sendCmd("G29", ACK, resultTimeout = 60000)
     }
 
     fun homeAxis(axisName: String? = null) {
-        duet.sendCmd(axisName?.let { "G28 $it" } ?: "G28")
+        duet.sendCmd(axisName?.let { "G28 $it" } ?: "G28", ACK, resultTimeout = 60000)
     }
 
     fun setBedTemperature(temperature: Int) {
@@ -121,10 +114,10 @@ class DuetController : Controller() {
         duet.sendCmd("M112", "M999")
     }
 
-    private fun String.toJson(): JsonObject = try {
-        Json.createReader(StringReader(this)).readObject()
-    } catch (e: Throwable) {
-        logger.warn(e) { "Error parsing Json response : $this" }
-        JsonObject.EMPTY_JSON_OBJECT
+    fun refreshSDData(func: () -> Unit = {}) {
+        runAsync { getSdData() }.ui {
+            _sdData.set(it)
+            func()
+        }
     }
 }
