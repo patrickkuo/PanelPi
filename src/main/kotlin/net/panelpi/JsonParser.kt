@@ -1,6 +1,7 @@
 package net.panelpi
 
 import mu.KotlinLogging
+import net.panelpi.models.TimesLeft
 import tornadofx.*
 import java.lang.reflect.InvocationTargetException
 import java.net.Proxy
@@ -20,7 +21,7 @@ val logger = KotlinLogging.logger {}
 inline fun <reified T : Any> JsonObject.parseAs(): T? = try {
     parseAs(T::class)
 } catch (e: Exception) {
-    logger.debug(e) { "Error parsing ${T::class.simpleName}" }
+    logger.debug(e) { "Error parsing ${T::class.simpleName}, data $this" }
     null
 }
 
@@ -42,22 +43,34 @@ fun <T : Any> JsonObject.parseAs(clazz: KClass<T>): T {
 private fun JsonObject.getSingleValue(path: String, type: KType): Any? {
     if (type.isMarkedNullable && !containsKey(path)) return null
     val typeClass = type.jvmErasure
-    return when (typeClass) {
-        String::class -> getString(path)
-        Int::class -> getInt(path)
-        Long::class -> getLong(path)
-        Double::class -> getDouble(path)
-        LocalDateTime::class -> LocalDateTime.parse(getString(path))
-        Boolean::class -> try {
-            getBoolean(path)
-        } catch (e: ClassCastException) {
-            getInt(path) == 1
+    return try {
+        when (typeClass) {
+            String::class -> getString(path)
+            Int::class -> getInt(path)
+            Long::class -> getLong(path)
+            Double::class -> getDouble(path)
+            LocalDateTime::class -> LocalDateTime.parse(getString(path))
+            Boolean::class -> try {
+                getBoolean(path)
+            } catch (e: ClassCastException) {
+                getInt(path) == 1
+            }
+            TimesLeft::class -> try {
+                // Hack for time left, somehow duet return inconsistent json values
+                getJsonObject(path).parseAs(typeClass)
+            } catch (e: ClassCastException) {
+                val values = getJsonArray(path).getValuesAs<Double, JsonNumber> { it.doubleValue() }
+                TimesLeft(values.first(), values[1], values[2])
+            }
+            else -> if (typeClass.java.isEnum) {
+                parseEnum(typeClass.java, getString(path))
+            } else {
+                getJsonObject(path).parseAs(typeClass)
+            }
         }
-        else -> if (typeClass.java.isEnum) {
-            parseEnum(typeClass.java, getString(path))
-        } else {
-            getJsonObject(path).parseAs(typeClass)
-        }
+    } catch (e: Exception) {
+        logger.debug(e) { "Error parsing $path" }
+        throw e
     }
 }
 

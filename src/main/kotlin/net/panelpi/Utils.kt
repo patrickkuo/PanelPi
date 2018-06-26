@@ -57,8 +57,12 @@ operator fun JsonObject.plus(other: Pair<String, String>): JsonObject {
 }
 
 fun String.toJson(): JsonObject? = try {
-    Json.createReader(StringReader(this)).readObject()
+    if (isBlank()) {
+        null
+    } else {
+        Json.createReader(StringReader(this)).readObject()
+    }
 } catch (e: Throwable) {
-    DuetController.logger.warn(e) { "Error parsing Json response : $this" }
+    DuetController.logger.debug(e) { "Error parsing Json data, ignoring response : $this" }
     null
 }

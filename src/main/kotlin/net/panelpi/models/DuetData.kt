@@ -19,7 +19,7 @@ data class DuetData(val status: Status = Status.X,
                     private val coldRetractTemp: Int = Int.MAX_VALUE,
                     private val currentTool: Int = 0
 ) {
-    val axes = (axisNames.toList().map(Char::toString) zip coords.axes).toMap()
+    val axes = (axisNames.toUpperCase().toList().map(Char::toString) zip coords.axes).toMap()
     val isExtrudeEnable = temps.current.getOrNull(currentTool)?.let { it > coldExtrudeTemp } ?: false
     val isRetractEnable = temps.current.getOrNull(currentTool)?.let { it > coldRetractTemp } ?: false
 }
@@ -61,11 +61,11 @@ data class JsonSDFolder(val files: List<String>)
 data class SDFolder(override val fileName: String, val files: List<SDItem>) : SDItem()
 data class SDFile(override val fileName: String,
                   val size: Long,
-                  val lastModified: LocalDateTime,
+                  val lastModified: LocalDateTime = LocalDateTime.now(),
                   val height: Double,
                   val firstLayerHeight: Double,
                   val layerHeight: Double,
-                  val printTime: Int,
+                  val printTime: Int = 0,
                   val filament: List<Double>,
                   val generatedBy: String) : SDItem() {
     val layerHeights: Pair<Double, Double> = Pair(firstLayerHeight, layerHeight)

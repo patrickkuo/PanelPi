@@ -18,18 +18,12 @@
     <TitledPane text="Print Control" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
                 maxHeight="Infinity">
         <VBox alignment="CENTER" spacing="10">
-            <Button fx:id="pauseResume" styleClass="warning">
+            <Button fx:id="pauseResumeStart" styleClass="warning">
                 <graphic>
                     <FontAwesomeIconView glyphName="PAUSE" style="-fx-fill: WHITE"/>
                 </graphic>
                 Pause Print
             </Button>
-            <!--            <Button fx:id="printAnother" styleClass="success">
-                            <graphic>
-                                <FontAwesomeIconView glyphName="REFRESH" style="-fx-fill: WHITE"/>
-                            </graphic>
-                            Print Another
-                        </Button>-->
             <CheckBox>Enable Auto-Sleep</CheckBox>
         </VBox>
     </TitledPane>
@@ -42,7 +36,7 @@
                 <Label>mm</Label>
             </HBox>
             <HBox alignment="CENTER">
-                <Button styleClass="baby-stepping, left">
+                <Button fx:id="babySteppingDown" styleClass="baby-stepping, left">
                     <graphic>
                         <VBox alignment="BASELINE_CENTER">
                             <HBox alignment="CENTER">
@@ -53,7 +47,7 @@
                         </VBox>
                     </graphic>
                 </Button>
-                <Button styleClass="baby-stepping, right">
+                <Button fx:id="babySteppingUp" styleClass="baby-stepping, right">
                     <graphic>
                         <VBox alignment="BASELINE_CENTER">
                             <HBox alignment="CENTER">
@@ -72,19 +66,17 @@
     <TitledPane text="Controls" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
                 GridPane.columnIndex="2" maxHeight="Infinity">
         <GridPane vgap="10" hgap="10" maxHeight="Infinity">
-            <Button fx:id="speedFactor" styleClass="primary, large-icon" GridPane.valignment="CENTER"
-                    GridPane.vgrow="ALWAYS">
+            <Button fx:id="speedFactor" styleClass="primary, large-icon">
                 <graphic>
                     <MaterialDesignIconView glyphName="SPEEDOMETER" style="-fx-fill: WHITE"/>
                 </graphic>
             </Button>
-            <Button fx:id="fanControl" styleClass="primary, large-icon" GridPane.columnIndex="1" GridPane.valignment="CENTER"
-                    GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER">
+            <Button fx:id="fanControl" styleClass="primary, large-icon" GridPane.columnIndex="1">
                 <graphic>
                     <MaterialDesignIconView glyphName="FAN" style="-fx-fill: WHITE"/>
                 </graphic>
             </Button>
-            <Button fx:id="extrusionFactor" styleClass="primary, large-icon" GridPane.columnIndex="2" GridPane.valignment="CENTER">
+            <Button fx:id="extrusionFactor" styleClass="primary, large-icon" GridPane.rowIndex="1">
                 <graphic>
                     <MaterialDesignIconView glyphName="PERCENT" style="-fx-fill: WHITE"/>
                 </graphic>

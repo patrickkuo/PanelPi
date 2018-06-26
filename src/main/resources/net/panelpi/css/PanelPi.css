@@ -137,5 +137,5 @@
 
 .tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
     -fx-background: #daedf6;
-    -fx-table-cell-border-color: #daedf6;
+    -fx-table-cell-border-color: #d0e3ec;
 }

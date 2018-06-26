@@ -18,11 +18,16 @@
         SD Card 0
     </Button>
 
-    <Button fx:id="refresh" styleClass="primary" GridPane.columnIndex="1" GridPane.halignment="RIGHT"
-            GridPane.hgrow="ALWAYS">
+    <Button fx:id="print" styleClass="success" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS">
+        <graphic>
+            <FontAwesomeIconView glyphName="PLAY" style="-fx-fill: WHITE; -glyph-size: 20px"/>
+        </graphic>
+    </Button>
+
+    <Button fx:id="refresh" styleClass="primary" GridPane.columnIndex="2">
         <graphic>
             <FontAwesomeIconView glyphName="REFRESH" style="-fx-fill: WHITE; -glyph-size: 20px"/>
         </graphic>
     </Button>
-    <TreeTableView fx:id="treeTable" styleClass="sd-table" GridPane.rowIndex="1" GridPane.columnSpan="2"/>
+    <TreeTableView fx:id="treeTable" GridPane.rowIndex="1" GridPane.columnSpan="3"/>
 </GridPane>

@@ -30,6 +30,7 @@ class FileView : View() {
     private val duet: DuetController by inject()
 
     private val refresh: Button by fxid()
+    private val print: Button by fxid()
 
     init {
         treeTable.apply {
@@ -76,6 +77,15 @@ class FileView : View() {
             }
         }
         root.sceneProperty().addListener(listener)
+
+        print.disableProperty().bind(treeTable.selectionModel.selectedItemProperty().map { it?.value !is SDFile })
+
+        print.setOnAction {
+            val item = treeTable.selectedItem
+            if (item is SDFile) {
+                duet.selectFileAndPrint(item.fileName)
+            }
+        }
     }
 }
 

@@ -8,6 +8,7 @@ import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
 import net.panelpi.controllers.DuetController
 import net.panelpi.map
+import net.panelpi.models.Status
 import tornadofx.*
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -53,26 +54,30 @@ class StatusView : View() {
     private val fanControl: Button by fxid()
     private val extrusionFactor: Button by fxid()
 
+    private val babySteppingDown: Button by fxid()
+    private val babySteppingUp: Button by fxid()
+
+    private val pauseResumeStart: Button by fxid()
 
     init {
         progressBar.bind(duetData.map { it.fractionPrinted / 100 })
         progressLabel.bind(duetData.map { "${it.fractionPrinted}%" })
 
-        timeLeftFilament.bind(duetData.map { it.timesLeft?.filament ?: "n/a" })
-        timeLeftFile.bind(duetData.map { it.timesLeft?.file ?: "n/a" })
-        timeLeftLayer.bind(duetData.map { it.timesLeft?.layer ?: "n/a" })
+        timeLeftFilament.bind(duetData.map { it.timesLeft?.filament?.nullIfZero() ?: "n/a" })
+        timeLeftFile.bind(duetData.map { it.timesLeft?.file?.nullIfZero() ?: "n/a" })
+        timeLeftLayer.bind(duetData.map { it.timesLeft?.layer?.nullIfZero() ?: "n/a" })
 
-        warmUp.bind(duetData.map { it.warmUpDuration ?: "n/a" })
-        currentLayer.bind(currentLayerTime.map { it ?: "n/a" })
+        warmUp.bind(duetData.map { it.warmUpDuration?.nullIfZero() ?: "n/a" })
+        currentLayer.bind(currentLayerTime.map { it?.nullIfZero() ?: "n/a" })
 
-        currentLayerTime.addListener { _, old, _ -> old?.let(lastLayerTime::set) }
+        currentLayerTime.onChange { it?.let(lastLayerTime::set) }
 
-        lastLayer.bind(lastLayerTime.map { it ?: "n/a" })
-        printDuration.bind(duetData.map { it.printDuration ?: "n/a" })
+        lastLayer.bind(lastLayerTime.map { it?.toDouble()?.nullIfZero() ?: "n/a" })
+        printDuration.bind(duetData.map { it.printDuration?.nullIfZero() ?: "n/a" })
 
-        timeLeftFilamentTime.bind(duetData.map { it.timesLeft?.filament?.toTime() ?: "n/a" })
-        timeLeftFileTime.bind(duetData.map { it.timesLeft?.file?.toTime() ?: "n/a" })
-        timeLeftLayerTime.bind(duetData.map { it.timesLeft?.layer?.toTime() ?: "n/a" })
+        timeLeftFilamentTime.bind(duetData.map { it.timesLeft?.filament?.nullIfZero()?.toTime() ?: "n/a" })
+        timeLeftFileTime.bind(duetData.map { it.timesLeft?.file?.nullIfZero()?.toTime() ?: "n/a" })
+        timeLeftLayerTime.bind(duetData.map { it.timesLeft?.filament?.nullIfZero()?.toTime() ?: "n/a" })
 
         offsetAmount.bind(duetData.map { it.params.babystep })
 
@@ -124,7 +129,42 @@ class StatusView : View() {
                 }
             }
         }
+
+        babySteppingDown.setOnAction { duetController.babyStepping(false) }
+        babySteppingUp.setOnAction { duetController.babyStepping(true) }
+
+        pauseResumeStart.bind(duetData.map {
+            when (it.status) {
+                Status.P -> {
+                    pauseResumeStart.toggleClass("warning", true)
+                    pauseResumeStart.toggleClass("success", false)
+                    "Pause Print"
+                }
+                Status.A -> {
+                    pauseResumeStart.toggleClass("warning", false)
+                    pauseResumeStart.toggleClass("success", true)
+                    "Resume Print"
+                }
+                else -> {
+                    pauseResumeStart.toggleClass("warning", false)
+                    pauseResumeStart.toggleClass("success", true)
+                    "Print Another"
+                }
+            }
+        })
+
+        pauseResumeStart.setOnAction {
+            when (duetData.value.status) {
+                Status.P -> duetController.pausePrint()
+                Status.A -> duetController.resumePrint()
+                else -> currentFile.value?.let { duetController.selectFileAndPrint(it.fileName) }
+            }
+        }
+
+        pauseResumeStart.disableProperty().bind(currentFile.map { it == null })
     }
+
+    private fun Double.nullIfZero() = if (this == 0.0) null else this
 
     private fun Double.toTime() = LocalTime.now()
             .plusSeconds(toLong())

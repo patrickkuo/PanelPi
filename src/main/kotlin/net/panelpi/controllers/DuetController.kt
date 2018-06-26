@@ -45,20 +45,22 @@ class DuetController : Controller() {
         refreshSDData()
 
         timer(initialDelay = 1000, period = 500) {
-            val data = duet.sendCmd("M408 S4", resultTimeout = 5000).toJson()
-            runLater {
-                data?.let { jsonDuetData.set(jsonDuetData.value + it) }
+            try {
+                val data = duet.sendCmd("M408 S4", resultTimeout = 5000).toJson()
+                runLater {
+                    data?.let { jsonDuetData.set(jsonDuetData.value + it) }
+                }
+            } catch (e: Throwable) {
+                logger.debug(e) { "Ignoring error on update thread" }
             }
         }
 
-        statusObservable.addListener { _, _, newValue ->
-            if (newValue == Status.P) {
-                runAsync { getFile() }.ui { _currentFile.set(it) }
-            }
+        statusObservable.onChange {
+            if (it == Status.P) runAsync { getFile() }.ui { _currentFile.set(it) }
         }
     }
 
-    fun getSdData(folder: String = "gcodes"): SDFolder? {
+    private fun getSdData(folder: String = "gcodes"): SDFolder? {
         return duet.sendCmd("M20 S2 P/$folder", resultTimeout = 5000).toJson()?.parseAs<JsonSDFolder>()?.files?.sorted()?.mapNotNull {
             if (it.startsWith("*")) {
                 getSdData("$folder/${it.drop(1)}")
@@ -68,7 +70,7 @@ class DuetController : Controller() {
         }?.let { SDFolder(folder.split("/").last(), it) }
     }
 
-    fun getFile(path: String? = null): SDFile? {
+    private fun getFile(path: String? = null): SDFile? {
         return if (path == null) {
             duet.sendCmd("M36", resultTimeout = 5000).toJson()
         } else {
@@ -112,6 +114,26 @@ class DuetController : Controller() {
 
     fun emergencyStop() {
         duet.sendCmd("M112", "M999")
+    }
+
+    fun selectFileAndPrint(fileName: String) {
+        duet.sendCmd("M32 $fileName")
+    }
+
+    fun resumePrint() {
+        duet.sendCmd("M24")
+    }
+
+    fun pausePrint() {
+        duet.sendCmd("M25")
+    }
+
+    fun babyStepping(up: Boolean) {
+        if (up) {
+            duet.sendCmd("M290 S0.05")
+        } else {
+            duet.sendCmd("M290 S-0.05")
+        }
     }
 
     fun refreshSDData(func: () -> Unit = {}) {
