@@ -44,7 +44,7 @@
     -fx-border-width: 0 0 1 0;
 }
 
-.button.danger > .glyph-icon {
+.emergency-button > .glyph-icon {
     -glyph-size: 20px;
     -fx-fill: white;
 }
@@ -87,9 +87,10 @@
 
 .large-icon > .glyph-icon {
     -glyph-size: 30px;
+    -fx-fill: white;
 }
 
-.large-icon.button {
+.small-button.button {
     -fx-padding: 2 2 2 2;
 }
 

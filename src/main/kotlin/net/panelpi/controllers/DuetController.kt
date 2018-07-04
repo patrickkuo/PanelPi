@@ -128,6 +128,14 @@ class DuetController : Controller() {
         duet.sendCmd("M25")
     }
 
+    fun stopPrint() {
+        duet.sendCmd("M0")
+    }
+
+    fun setSpeedFactorOverride(speedFactor: Int) {
+        duet.sendCmd("M220 S$speedFactor")
+    }
+
     fun babyStepping(up: Boolean) {
         if (up) {
             duet.sendCmd("M290 S0.05")
@@ -138,7 +146,7 @@ class DuetController : Controller() {
 
     fun refreshSDData(func: () -> Unit = {}) {
         runAsync { getSdData() }.ui {
-            _sdData.set(it)
+            it?.let { _sdData.set(it) }
             func()
         }
     }

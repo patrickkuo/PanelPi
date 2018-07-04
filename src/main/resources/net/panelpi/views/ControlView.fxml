@@ -86,18 +86,18 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="homeAll" styleClass="primary, large-icon" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
+            <Button fx:id="homeAll" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
                 <graphic>
                     <MaterialDesignIconView glyphName="HOME_VARIANT"/>
                 </graphic>
             </Button>
-            <Button fx:id="bedComp" styleClass="primary, large-icon" GridPane.columnIndex="4" GridPane.rowIndex="1"
+            <Button fx:id="bedComp" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4" GridPane.rowIndex="1"
                     GridPane.halignment="RIGHT">
                 <graphic>
                     <MaterialDesignIconView glyphName="VECTOR_SQUARE"/>
                 </graphic>
             </Button>
-            <Button fx:id="gridComp" styleClass="primary, large-icon" GridPane.columnIndex="4" GridPane.rowIndex="2"
+            <Button fx:id="gridComp" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4" GridPane.rowIndex="2"
                     GridPane.hgrow="ALWAYS"
                     GridPane.fillWidth="true" GridPane.halignment="RIGHT">
                 <graphic>

@@ -2,11 +2,8 @@ package net.panelpi.duetwifi
 
 import com.pi4j.io.serial.*
 import mu.KLogging
-import net.panelpi.ConcurrentBox
-import net.panelpi.appendCheckSum
+import net.panelpi.*
 import net.panelpi.models.DuetData
-import net.panelpi.parseAs
-import net.panelpi.toJson
 
 fun main(args: Array<String>) {
     val v = "{\"status\":\"I\",\"coords\":{\"axesHomed\":[1,1,1],\"xyz\":[150.000,150.000,5.000],\"machine\":[150.000\u0000,150.005.000],\"extr\":[0.0]},\"currentTool\":0,\"params\":{\"atxPower\":1,\"fanPercent\":[0,100,100,0,0,0,0,0,0],\"speedFactor\":100.0,\"extrFactors\":[100.0],\"babystep\":0.000},\"sensors\":{\"probeValue\":0,\"fanRPM\":0},\"temps\":{\"bed\":{\"current\":27.2,\"active\":0.0,\"state\":0,\"heater\":1},\"current\":[27.1,27.2,2000.0,2000.0,2000.0,2000.0,2000.0,2000.0],\"state\":[2,0,0,0,0,0,0,0],\"heads\":{\"current\":[],\"active\":[],\"standby\":[],\"state\":[]},\"tools\":{\"active\":[[0.0]],\"standby\":[[0.0]]},\"extra\":[{\"name\":\"MCU\",\"temp\":35.4}]},\"time\":1955.0,\"currentLayer\":0,\"currentLayerTime\":0.0,\"extrRaw\":[0.0],\"fractionPrinted\":0.0,\"firstLayerDuration\":0.0,\"firstLayerHeight\":0.00,\"printDuration\":0.0,\"warmUpDuration\":0.0,\"timesLeft\":{\"file\":0.0,\"filament\":0.0,\"layer\":0.0},\"seq\":1,\"resp\":\"\"}"
@@ -77,17 +74,42 @@ class DevDuetIO : DuetIO() {
         private const val dir2 = "{\"dir\":\"gcodes/test\",\"first\":0,\"files\":[\"file3.gcode\"],\"next\":0,\"err\":0}"
     }
 
+    private var statusUpdate = updates.toJson()
+
     override fun sendCmd(vararg lines: String, resultTimeout: Long): String {
         logger.debug { lines.joinToString("\n") }
         return when {
             lines.contains("M408 S3") -> fullStatus
-            lines.contains("M408 S4") -> updates
+            lines.contains("M408 S4") -> statusUpdate.toString()
             lines.contains("M20 S2 P/gcodes") -> dir1
             lines.contains("M20 S2 P/gcodes/test") -> dir2
             lines.contains("M36 /gcodes/file1.gcode") -> file
             lines.contains("M36 /gcodes/file2.gcode") -> file
             lines.contains("M36 /gcodes/test/file3.gcode") -> file
             lines.contains("M36") -> currentFile
+            lines.contains("M0") -> {
+                statusUpdate = statusUpdate?.plus(Pair("status", "I"))
+                ""
+            }
+
+            lines.contains("M25") -> {
+                statusUpdate = statusUpdate?.plus(Pair("status", "A"))
+                ""
+            }
+
+            lines.contains("M24") -> {
+                statusUpdate = statusUpdate?.plus(Pair("status", "P"))
+                ""
+            }
+
+            lines.contains("M24") -> {
+                statusUpdate = statusUpdate?.plus(Pair("status", "P"))
+                ""
+            }
+            lines.any { it.contains("M32") } -> {
+                statusUpdate = statusUpdate?.plus(Pair("status", "P"))
+                ""
+            }
             else -> ""
         }
     }

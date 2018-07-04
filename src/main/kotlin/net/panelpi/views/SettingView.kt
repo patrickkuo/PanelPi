@@ -22,7 +22,7 @@ class SettingView : View() {
             brightnessSlider.value = Paths.get("/sys/class/backlight/rpi_backlight/brightness").toFile().readLines().first().toDouble()
         }
         brightnessSlider.isDisable = !brightnessControl.exists()
-        brightnessSlider.min = 1.0
+        brightnessSlider.min = 0.0
         brightnessSlider.max = 255.0
         brightnessSlider.valueProperty().addListener { _, _, newValue ->
             if (!brightnessSlider.isValueChanging) {

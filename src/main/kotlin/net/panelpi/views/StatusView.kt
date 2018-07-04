@@ -1,11 +1,15 @@
 package net.panelpi.views
 
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
+import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.geometry.Pos
+import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
+import javafx.scene.layout.HBox
 import net.panelpi.controllers.DuetController
 import net.panelpi.map
 import net.panelpi.models.Status
@@ -57,7 +61,9 @@ class StatusView : View() {
     private val babySteppingDown: Button by fxid()
     private val babySteppingUp: Button by fxid()
 
-    private val pauseResumeStart: Button by fxid()
+    private val pauseResume: Button by fxid()
+
+    private val startStop: Button by fxid()
 
     init {
         progressBar.bind(duetData.map { it.fractionPrinted / 100 })
@@ -82,10 +88,10 @@ class StatusView : View() {
         offsetAmount.bind(duetData.map { it.params.babystep })
 
         fileName.bind(currentFile.map { it?.fileName ?: "n/a" })
-        fileSize.bind(currentFile.map { it?.size ?: "n/a" })
-        objectHeight.bind(currentFile.map { it?.height ?: "n/a" })
-        layerHeight.bind(currentFile.map { it?.let { "${it.firstLayerHeight} / ${it.layerHeight}" } ?: "n/a" })
-        filamentUsage.bind(currentFile.map { it?.filament?.first() ?: "n/a" })
+        fileSize.bind(currentFile.map { it?.size?.toHumanReadableByteCount() ?: "n/a" })
+        objectHeight.bind(currentFile.map { it?.height?.let { "$it mm" } ?: "n/a" })
+        layerHeight.bind(currentFile.map { it?.let { "${it.firstLayerHeight} / ${it.layerHeight} mm" } ?: "n/a" })
+        filamentUsage.bind(currentFile.map { it?.filament?.first()?.let { "$it mm" } ?: "n/a" })
         generatedBy.bind(currentFile.map { it?.generatedBy ?: "n/a" })
 
         fanControl.popup {
@@ -106,12 +112,22 @@ class StatusView : View() {
             }
         }
 
+
         speedFactor.popup {
             titledpane("Speed Factor", collapsible = false) {
                 alignment = Pos.CENTER
                 gridpane {
                     row {
-                        slider(0, 200, 100)
+                        slider(0.0, 200.0, duetData.value.params.speedFactor) {
+                            duetData.map { it.params.speedFactor }.onChange {
+                                it?.let(this::adjustValue)
+                            }
+                            valueProperty().onChange {
+                                if (it.toInt() != duetData.value.params.speedFactor.toInt()) {
+                                    duetController.setSpeedFactorOverride(it.toInt())
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -133,35 +149,66 @@ class StatusView : View() {
         babySteppingDown.setOnAction { duetController.babyStepping(false) }
         babySteppingUp.setOnAction { duetController.babyStepping(true) }
 
-        pauseResumeStart.bind(duetData.map {
+
+        val resume = Label("Resume Print").withIcon(FontAwesomeIcon.PLAY)
+        val pause = Label("Pause Print").withIcon(FontAwesomeIcon.PAUSE)
+        pauseResume.graphicProperty().bind(duetData.map {
             when (it.status) {
-                Status.P -> {
-                    pauseResumeStart.toggleClass("warning", true)
-                    pauseResumeStart.toggleClass("success", false)
-                    "Pause Print"
-                }
-                Status.A -> {
-                    pauseResumeStart.toggleClass("warning", false)
-                    pauseResumeStart.toggleClass("success", true)
-                    "Resume Print"
+                Status.A, Status.S -> {
+                    pauseResume.toggleClass("warning", false)
+                    pauseResume.toggleClass("success", true)
+                    resume
                 }
                 else -> {
-                    pauseResumeStart.toggleClass("warning", false)
-                    pauseResumeStart.toggleClass("success", true)
-                    "Print Another"
+                    pauseResume.toggleClass("warning", true)
+                    pauseResume.toggleClass("success", false)
+                    pause
                 }
             }
         })
-
-        pauseResumeStart.setOnAction {
+        pauseResume.setOnAction {
             when (duetData.value.status) {
-                Status.P -> duetController.pausePrint()
-                Status.A -> duetController.resumePrint()
+                Status.A, Status.S -> duetController.resumePrint()
+                else -> duetController.pausePrint()
+            }
+        }
+        pauseResume.disableProperty().bind(duetData.map {
+            when (it.status) {
+                Status.A, Status.S, Status.P -> false
+                else -> true
+            }
+        })
+
+        val stop = Label("Stop Print").withIcon(FontAwesomeIcon.STOP)
+        val start = Label("Print Another").withIcon(FontAwesomeIcon.PLAY)
+        startStop.graphicProperty().bind(duetData.map {
+            when (it.status) {
+                Status.A, Status.S, Status.P -> {
+                    startStop.toggleClass("danger", true)
+                    startStop.toggleClass("success", false)
+                    stop
+                }
+                else -> {
+                    startStop.toggleClass("danger", false)
+                    startStop.toggleClass("success", true)
+                    start
+                }
+            }
+        })
+        startStop.setOnAction {
+            when (duetData.value.status) {
+                Status.A, Status.S, Status.P -> duetController.stopPrint()
                 else -> currentFile.value?.let { duetController.selectFileAndPrint(it.fileName) }
             }
         }
 
-        pauseResumeStart.disableProperty().bind(currentFile.map { it == null })
+        startStop.disableProperty().bind(duetData.map {
+            when (it.status) {
+                Status.A, Status.S -> false
+                Status.I -> currentFile.value == null
+                else -> true
+            }
+        })
     }
 
     private fun Double.nullIfZero() = if (this == 0.0) null else this
@@ -170,5 +217,17 @@ class StatusView : View() {
             .plusSeconds(toLong())
             .truncatedTo(ChronoUnit.SECONDS)
             .format(DateTimeFormatter.ISO_LOCAL_TIME)
+
+    private fun Label.withIcon(icon: FontAwesomeIcon): Node {
+        val iconView = FontAwesomeIconView(icon).apply {
+            style = "-fx-fill: white;"
+        }
+        this.style = "-fx-text-fill: white;"
+        return HBox(iconView, this).apply {
+            spacing = 3.0
+            alignment = Pos.CENTER
+            maxWidth = Double.MAX_VALUE
+        }
+    }
 
 }

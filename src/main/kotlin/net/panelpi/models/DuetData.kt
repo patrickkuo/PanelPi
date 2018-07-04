@@ -77,7 +77,7 @@ enum class Status(private val value: String, val color: String) {
     P("Printing", "GREEN"),
     S("Stopped", "RED"),
     C("Running config file", "BLUE"),
-    A("Paused", "YELLOW"),
+    A("Paused", "ORANGE"),
     D("Pausing", "YELLOW"),
     R("Resuming", "GREEN"),
     B("Busy", "ORANGE"),

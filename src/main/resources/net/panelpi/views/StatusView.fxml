@@ -17,15 +17,36 @@
 
     <TitledPane text="Print Control" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
                 maxHeight="Infinity">
-        <VBox alignment="CENTER" spacing="10">
-            <Button fx:id="pauseResumeStart" styleClass="warning">
+        <GridPane vgap="10" hgap="10">
+            <Button fx:id="pauseResume" styleClass="warning" maxWidth="Infinity">
                 <graphic>
                     <FontAwesomeIconView glyphName="PAUSE" style="-fx-fill: WHITE"/>
                 </graphic>
-                Pause Print
             </Button>
-            <CheckBox>Enable Auto-Sleep</CheckBox>
-        </VBox>
+            <Button fx:id="startStop" styleClass="danger" GridPane.rowIndex="1" maxWidth="Infinity">
+                <graphic>
+                    <FontAwesomeIconView glyphName="STOP" style="-fx-fill: WHITE"/>
+                </graphic>
+            </Button>
+
+            <CheckBox GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="3">Auto-Sleep</CheckBox>
+
+            <Button fx:id="speedFactor" styleClass="primary, large-icon, small-button" GridPane.columnIndex="1">
+                <graphic>
+                    <MaterialDesignIconView glyphName="SPEEDOMETER" style="-fx-fill: WHITE"/>
+                </graphic>
+            </Button>
+            <Button fx:id="fanControl" styleClass="primary, large-icon, small-button" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.halignment="CENTER" GridPane.fillWidth="true">
+                <graphic>
+                    <MaterialDesignIconView glyphName="FAN" style="-fx-fill: WHITE"/>
+                </graphic>
+            </Button>
+            <Button fx:id="extrusionFactor" styleClass="primary, large-icon, small-button" GridPane.columnIndex="3">
+                <graphic>
+                    <MaterialDesignIconView glyphName="PERCENT" style="-fx-fill: WHITE"/>
+                </graphic>
+            </Button>
+        </GridPane>
     </TitledPane>
     <TitledPane text="Z Baby Stepping" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
                 GridPane.columnIndex="1">
@@ -63,26 +84,6 @@
     </TitledPane>
     <Pane GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"/>
 
-    <TitledPane text="Controls" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="1"
-                GridPane.columnIndex="2" maxHeight="Infinity">
-        <GridPane vgap="10" hgap="10" maxHeight="Infinity">
-            <Button fx:id="speedFactor" styleClass="primary, large-icon">
-                <graphic>
-                    <MaterialDesignIconView glyphName="SPEEDOMETER" style="-fx-fill: WHITE"/>
-                </graphic>
-            </Button>
-            <Button fx:id="fanControl" styleClass="primary, large-icon" GridPane.columnIndex="1">
-                <graphic>
-                    <MaterialDesignIconView glyphName="FAN" style="-fx-fill: WHITE"/>
-                </graphic>
-            </Button>
-            <Button fx:id="extrusionFactor" styleClass="primary, large-icon" GridPane.rowIndex="1">
-                <graphic>
-                    <MaterialDesignIconView glyphName="PERCENT" style="-fx-fill: WHITE"/>
-                </graphic>
-            </Button>
-        </GridPane>
-    </TitledPane>
     <TitledPane text="Collected Data" collapsible="false" alignment="BASELINE_CENTER" GridPane.rowIndex="2"
                 GridPane.columnSpan="3"
                 GridPane.hgrow="ALWAYS" GridPane.fillWidth="true">

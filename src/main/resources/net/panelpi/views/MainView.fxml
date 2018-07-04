@@ -49,7 +49,7 @@
                 </padding>
                 <Label fx:id="status" styleClass="printerStatus">Status</Label>
             </HBox>
-            <Button fx:id="stop" styleClass="danger" GridPane.columnIndex="8">
+            <Button fx:id="stop" styleClass="danger, emergency-button" GridPane.columnIndex="8">
                 <graphic>
                     <FontAwesomeIconView glyphName="BOLT"/>
                 </graphic>
