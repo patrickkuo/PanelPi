@@ -68,7 +68,7 @@ The main motivation of starting this project is I want a control panel for my Du
    * `sudo apt-get install oracle-java8-jdk`
 
 1. install javafx
-   * https://lb.raspberrypi.org/forums/viewtopic.php?t=146098
+   * https://lb.raspberrypi.org/forums/viewtopic.php?t=146098#p1009599
 
 1. install wiringpi
    * http://wiringpi.com/download-and-install/
