@@ -23,6 +23,13 @@ The main motivation of starting this project is I want a control panel for my Du
 
 **PanelPi is _not_ a money saving solution to PanelDue, RaspberryPi + official 7" screen is not much cheaper**
 
+## Screenshots
+### Control View
+![alt tag](images/controlView.png "Control View")<!-- .element height="50%" width="50%" -->
+### Print Status View 
+![alt tag](images/statusView.png "Status View")<!-- .element height="50%" width="50%" -->
+### File View
+![alt tag](images/fileView.png "File View")<!-- .element height="50%" width="50%" -->
 
 ## Setting up Panel Pi
 ### Prerequisite
