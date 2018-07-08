@@ -10,6 +10,8 @@ import net.panelpi.parseAs
 import net.panelpi.plus
 import net.panelpi.toJson
 import tornadofx.*
+import java.nio.file.Files
+import java.nio.file.Paths
 import javax.json.JsonObject
 import kotlin.concurrent.timer
 
@@ -89,7 +91,7 @@ class DuetController : Controller() {
     }
 
     fun logDuetData() {
-        logger.info { jsonDuetData.value.toString() }
+        Files.write(Paths.get("logs/duet-data-dump-${System.currentTimeMillis()}.log"), listOf(jsonDuetData.value.toString()))
     }
 
     fun bedCompensation() {
@@ -132,8 +134,16 @@ class DuetController : Controller() {
         duet.sendCmd("M0")
     }
 
-    fun setSpeedFactorOverride(speedFactor: Int) {
-        duet.sendCmd("M220 S$speedFactor")
+    fun setSpeedFactorOverride(percent: Int) {
+        duet.sendCmd("M220 S$percent")
+    }
+
+    fun setExtrudeFactorOverride(percent: Int) {
+        duet.sendCmd("M221 S$percent")
+    }
+
+    fun setFanSpeed(percent: Int) {
+        duet.sendCmd("M106 S${percent / 100}")
     }
 
     fun babyStepping(up: Boolean) {

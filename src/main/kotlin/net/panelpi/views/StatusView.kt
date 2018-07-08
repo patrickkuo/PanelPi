@@ -101,12 +101,17 @@ class StatusView : View() {
                     vgap = 10.0
                     hgap = 5.0
                     row {
-                        label("Tool Fan :")
-                        slider(0, 100, 0).bind(duetData.map { it.params.fanPercent.firstOrNull() ?: 0.0 })
-                    }
-                    row {
-                        label("Fan 0 :")
-                        slider(0, 200, 100)
+                        label("Fan 0:")
+                        slider(0, 100, duetData.value.params.fanPercent.firstOrNull()) {
+                            duetData.map { it.params.fanPercent.firstOrNull() }.onChange {
+                                it?.let(this::adjustValue)
+                            }
+                            valueProperty().onChange {
+                                if (it.toInt() != duetData.value.params.fanPercent.firstOrNull()?.toInt()) {
+                                    duetController.setFanSpeed(it.toInt())
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -140,7 +145,16 @@ class StatusView : View() {
                     hgap = 5.0
                     row {
                         label("Extruder 0 :")
-                        slider(0, 200, 100)
+                        slider(0, 200, duetData.value.params.extrFactor.firstOrNull()) {
+                            duetData.map { it.params.extrFactor.firstOrNull() }.onChange {
+                                it?.let(this::adjustValue)
+                            }
+                            valueProperty().onChange {
+                                if (it.toInt() != duetData.value.params.extrFactor.firstOrNull()?.toInt()) {
+                                    duetController.setExtrudeFactorOverride(it.toInt())
+                                }
+                            }
+                        }
                     }
                 }
             }

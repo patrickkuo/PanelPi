@@ -33,6 +33,8 @@ The main motivation of starting this project is I want a control panel for my Du
 | URXD0    |   GPIO14    |
 | UTXD0    |   GPIO15    |
 
+**The 5v pin from the Panel Due port might be a little under voltage, which will trigger RaspPi's under voltage warning, it's better to get power directly from 5v PSU if possible.**
+
 ### Software setup
 1. Flash RASPBIAN STRETCH Lite to your SD card 
    * https://www.raspberrypi.org/downloads/raspbian/
