@@ -4,7 +4,6 @@ import javafx.scene.Parent
 import javafx.scene.control.Slider
 import mu.KLogging
 import net.panelpi.controllers.DuetController
-import net.panelpi.duetwifi.DuetWifi
 import tornadofx.*
 import java.io.PrintWriter
 import java.nio.file.Paths
@@ -24,10 +23,10 @@ class SettingView : View() {
         brightnessSlider.isDisable = !brightnessControl.exists()
         brightnessSlider.min = 0.0
         brightnessSlider.max = 255.0
-        brightnessSlider.valueProperty().addListener { _, _, newValue ->
-            if (!brightnessSlider.isValueChanging) {
+        brightnessSlider.valueChangingProperty().onChange {
+            if (!it) {
                 PrintWriter(brightnessControl).use {
-                    it.print(newValue.toInt().toString())
+                    it.print(brightnessSlider.value.toInt().toString())
                 }
             }
         }

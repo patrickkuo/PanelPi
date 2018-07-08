@@ -5,9 +5,11 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.scene.control.*
+import javafx.scene.layout.VBox
 import net.panelpi.controllers.DuetController
 import net.panelpi.map
 import tornadofx.*
+import kotlin.math.roundToInt
 
 class ControlView : View() {
     override val root: Parent by fxml()
@@ -49,14 +51,14 @@ class ControlView : View() {
     private val extrude: Button by fxid()
     private val retract: Button by fxid()
 
-    private val feedAmountCB: ComboBox<String> by fxid()
-    private val feedRateCB: ComboBox<String> by fxid()
+    private val feedAmountCB: ComboBox<Int> by fxid()
+    private val feedRateCB: ComboBox<Int> by fxid()
 
     private val bedActiveTemp: ComboBox<Int> by fxid()
     private val toolActiveTemp: ComboBox<Int> by fxid()
     private val toolStandbyTemp: ComboBox<Int> by fxid()
 
-    private val fanSlider: Slider by fxid()
+    private val fanSliderBox: VBox by fxid()
     private val fanSliderAmount: Label by fxid()
 
     // Observable value for listening will need to be declared here, or else listener will get GCed and won't trigger event.
@@ -68,6 +70,7 @@ class ControlView : View() {
     private val bedActive: ObservableValue<Int?> = duetData.map { it.temps.bed.active }
     private val toolActive: ObservableValue<Int?> = duetData.map { it.temps.tools.activeTemperature(0) }
     private val toolStandby: ObservableValue<Int?> = duetData.map { it.temps.tools.standbyTemperature(0) }
+    private val fanPercent = duetData.map { it.params.fanPercent.firstOrNull() }
 
     init {
         bindHomeButton(homeX, xHomed, "X")
@@ -118,14 +121,14 @@ class ControlView : View() {
         yCoord.bind(duetData.map { "${it.axes["Y"]?.coord}" })
         zCoord.bind(duetData.map { "${it.axes["Z"]?.coord}" })
 
-        val feedAmounts = observableList("100", "50", "20", "10", "5", "1")
-        val feedRate = observableList("60", "30", "15", "5", "1")
+        val feedAmounts = observableList(100, 50, 20, 10, 5, 1)
+        val feedRate = observableList(60, 30, 15, 5, 1)
 
         feedAmountCB.items = feedAmounts
         feedRateCB.items = feedRate
 
-        feedAmountCB.selectionModel.select("10")
-        feedRateCB.selectionModel.select("5")
+        feedAmountCB.selectionModel.select(10 as Int?)
+        feedRateCB.selectionModel.select(5 as Int?)
 
         extrude.disableProperty().bind(duetData.map { !it.isExtrudeEnable })
         retract.disableProperty().bind(duetData.map { !it.isRetractEnable })
@@ -167,10 +170,20 @@ class ControlView : View() {
             }
         }
 
-        fanSlider.min = 0.0
-        fanSlider.max = 100.0
-        fanSlider.majorTickUnit = 1.0
-        fanSliderAmount.bind(fanSlider.valueProperty().map { "${it.toInt()} %" })
+        fanSliderBox.apply {
+            labeledSlider(0.0, 100.0) {
+                fanPercent.onChange { it?.let { this.value = it } }
+                valueChangingProperty().onChange {
+                    if (!it) {
+                        val intValue = value.roundToInt()
+                        value = intValue.toDouble()
+                        if (intValue != duetData.value.params.fanPercent.firstOrNull()?.toInt()) {
+                            duetController.setFanSpeed(intValue)
+                        }
+                    }
+                }
+            }
+        }
 
         // TODO: refactor axes.
         xLeft.setOnAction {
@@ -191,6 +204,14 @@ class ControlView : View() {
         }
         zRight.setOnAction {
             duetController.moveAxis("Z", zAmount.value)
+        }
+
+        extrude.setOnAction {
+            duetController.extrude(feedAmountCB.value.toDouble(), feedRateCB.value)
+        }
+
+        retract.setOnAction {
+            duetController.extrude(-feedAmountCB.value.toDouble(), feedRateCB.value)
         }
     }
 

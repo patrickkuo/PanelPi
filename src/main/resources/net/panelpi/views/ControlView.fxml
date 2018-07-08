@@ -86,18 +86,21 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="homeAll" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
+            <Button fx:id="homeAll" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4"
+                    GridPane.halignment="RIGHT">
                 <graphic>
                     <MaterialDesignIconView glyphName="HOME_VARIANT"/>
                 </graphic>
             </Button>
-            <Button fx:id="bedComp" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4" GridPane.rowIndex="1"
+            <Button fx:id="bedComp" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4"
+                    GridPane.rowIndex="1"
                     GridPane.halignment="RIGHT">
                 <graphic>
                     <MaterialDesignIconView glyphName="VECTOR_SQUARE"/>
                 </graphic>
             </Button>
-            <Button fx:id="gridComp" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4" GridPane.rowIndex="2"
+            <Button fx:id="gridComp" styleClass="primary, large-icon, small-button" GridPane.columnIndex="4"
+                    GridPane.rowIndex="2"
                     GridPane.hgrow="ALWAYS"
                     GridPane.fillWidth="true" GridPane.halignment="RIGHT">
                 <graphic>
@@ -131,7 +134,6 @@
                     Extrude
                 </Button>
             </HBox>
-
         </GridPane>
     </TitledPane>
 
@@ -148,10 +150,7 @@
                 </ToggleButton>
             </HBox>
             <Label GridPane.rowIndex="1" GridPane.halignment="RIGHT">Fan :</Label>
-            <HBox GridPane.rowIndex="1" GridPane.columnIndex="1" alignment="CENTER">
-                <Slider fx:id="fanSlider" prefWidth="100"/>
-                <Label fx:id="fanSliderAmount" prefWidth="40">0 %</Label>
-            </HBox>
+            <VBox fx:id="fanSliderBox" GridPane.rowIndex="1" GridPane.columnIndex="1" alignment="CENTER"/>
         </GridPane>
     </TitledPane>
 </GridPane>

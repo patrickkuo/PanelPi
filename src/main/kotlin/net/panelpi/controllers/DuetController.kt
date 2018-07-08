@@ -84,6 +84,10 @@ class DuetController : Controller() {
         duet.sendCmd("M120", "G91", "G1 $axisName$amount F$speed", "M121")
     }
 
+    fun extrude(amount: Double, feedRate: Int) {
+        duet.sendCmd("M120", "M83", "G1 E$amount F${feedRate * 60}", "M121")
+    }
+
     fun atxPower(on: Boolean = true) {
         if (data.value.params.atxPower != on) {
             duet.sendCmd(if (on) "M80" else "M81")
@@ -139,11 +143,11 @@ class DuetController : Controller() {
     }
 
     fun setExtrudeFactorOverride(percent: Int) {
-        duet.sendCmd("M221 S$percent")
+        duet.sendCmd("M221 D0 S$percent")
     }
 
     fun setFanSpeed(percent: Int) {
-        duet.sendCmd("M106 S${percent / 100}")
+        duet.sendCmd("M106 S${percent.toDouble() / 100}")
     }
 
     fun babyStepping(up: Boolean) {

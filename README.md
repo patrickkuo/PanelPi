@@ -4,6 +4,11 @@
 
 _Work In Progress_
 
+## Releases
+### Beta 1 
+08/07/2018 - Beta 1 release!  
+PanelPi is now in a usable state, however, only printer with XYZ axes and 1 hotend is supported, it was tested on a Core XY setup with a single hotend. 
+
 
 ## Why PanelPi?
 The main motivation of starting this project is I want a control panel for my DuetWifi with a better UI and touchscreen then PanelDue.
@@ -33,7 +38,7 @@ The main motivation of starting this project is I want a control panel for my Du
 | URXD0    |   GPIO14    |
 | UTXD0    |   GPIO15    |
 
-**The 5v pin from the Panel Due port might be a little under voltage, which will trigger RaspPi's under voltage warning, it's better to get power directly from 5v PSU if possible.**
+**The 5v output from the Panel Due port might be a little under voltage, which will trigger RaspPi's under voltage warning, it's better to get power directly from 5v PSU if possible.**
 
 ### Software setup
 1. Flash RASPBIAN STRETCH Lite to your SD card 
@@ -71,19 +76,23 @@ The main motivation of starting this project is I want a control panel for my Du
 ## TODOs
 * Console view
 * Stop mimicking duet web interface and optimise UI for small touchscreen 
-* Multi-extruder support
+* Multi-hotend/Tool support
 * More detailed step-by-step setup instructions
 * Splash screen
+* Use raspberry pi as a second SD card slot? (Is it possible?)
 * improve startup time
 * Edit list items in setting
 * Developer docs
 * Raspberry Pi image for easier setup
-* UI for other resolutions?
+* UI for other screen resolutions?
 * Port to android?
+* Custom CSS
 
 ## Why JavaFX, Kotlin?
 * Easy to mimic duet web interface's look and feel using CSS
 * Possibility of porting to android
 * Easy to write compact code quickly
 
+## Known Issues
+* Slider is difficult to use
  

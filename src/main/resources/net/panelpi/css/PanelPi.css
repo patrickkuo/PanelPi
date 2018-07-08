@@ -1,3 +1,7 @@
+* {
+    -fx-focus-traversable: false;
+}
+
 .printerStatus.label {
     -fx-label-padding: 2 10 2 10;
     -fx-background-radius: 5;
@@ -139,4 +143,8 @@
 .tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell:filled:selected {
     -fx-background: #daedf6;
     -fx-table-cell-border-color: #d0e3ec;
+}
+
+.slider > .thumb {
+    -fx-background-color: #428bca;
 }

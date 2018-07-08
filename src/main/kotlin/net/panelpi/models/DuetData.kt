@@ -32,7 +32,7 @@ data class Axis(val homed: Boolean, val coord: Double)
 data class Parameters(val atxPower: Boolean = false,
                       val fanPercent: List<Double> = emptyList(),
                       val speedFactor: Double = 0.0,
-                      val extrFactor: List<Double> = emptyList(),
+                      val extrFactors: List<Double> = emptyList(),
                       val babystep: Double = 0.0)
 
 data class Sensors(val probeValue: Int = 0, val fanRPM: Int = 0)

@@ -17,6 +17,7 @@ import tornadofx.*
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import kotlin.math.roundToInt
 
 
 class StatusView : View() {
@@ -65,6 +66,10 @@ class StatusView : View() {
 
     private val startStop: Button by fxid()
 
+    private val fanPercent = duetData.map { it.params.fanPercent.firstOrNull() }
+    private val extrudeFactor = duetData.map { it.params.extrFactors.firstOrNull() }
+    private val speedFactorValue = duetData.map { it.params.speedFactor }
+
     init {
         progressBar.bind(duetData.map { it.fractionPrinted / 100 })
         progressLabel.bind(duetData.map { "${it.fractionPrinted}%" })
@@ -102,13 +107,16 @@ class StatusView : View() {
                     hgap = 5.0
                     row {
                         label("Fan 0:")
-                        slider(0, 100, duetData.value.params.fanPercent.firstOrNull()) {
-                            duetData.map { it.params.fanPercent.firstOrNull() }.onChange {
-                                it?.let(this::adjustValue)
-                            }
-                            valueProperty().onChange {
-                                if (it.toInt() != duetData.value.params.fanPercent.firstOrNull()?.toInt()) {
-                                    duetController.setFanSpeed(it.toInt())
+                        labeledSlider(0, 100) {
+                            prefWidth = 300.0
+                            fanPercent.onChange { it?.let { this.value = it } }
+                            valueChangingProperty().onChange {
+                                if (!it) {
+                                    val intValue = value.roundToInt()
+                                    value = intValue.toDouble()
+                                    if (intValue != duetData.value.params.fanPercent.firstOrNull()?.toInt()) {
+                                        duetController.setFanSpeed(intValue)
+                                    }
                                 }
                             }
                         }
@@ -117,19 +125,21 @@ class StatusView : View() {
             }
         }
 
-
         speedFactor.popup {
             titledpane("Speed Factor", collapsible = false) {
                 alignment = Pos.CENTER
                 gridpane {
                     row {
-                        slider(0.0, 200.0, duetData.value.params.speedFactor) {
-                            duetData.map { it.params.speedFactor }.onChange {
-                                it?.let(this::adjustValue)
-                            }
-                            valueProperty().onChange {
-                                if (it.toInt() != duetData.value.params.speedFactor.toInt()) {
-                                    duetController.setSpeedFactorOverride(it.toInt())
+                        labeledSlider(0.0, 300.0) {
+                            prefWidth = 300.0
+                            speedFactorValue.onChange { it?.let { this.value = it } }
+                            valueChangingProperty().onChange {
+                                if (!it) {
+                                    val intValue = value.roundToInt()
+                                    value = intValue.toDouble()
+                                    if (value.toInt() != duetData.value.params.speedFactor.toInt()) {
+                                        duetController.setSpeedFactorOverride(intValue)
+                                    }
                                 }
                             }
                         }
@@ -145,13 +155,16 @@ class StatusView : View() {
                     hgap = 5.0
                     row {
                         label("Extruder 0 :")
-                        slider(0, 200, duetData.value.params.extrFactor.firstOrNull()) {
-                            duetData.map { it.params.extrFactor.firstOrNull() }.onChange {
-                                it?.let(this::adjustValue)
-                            }
-                            valueProperty().onChange {
-                                if (it.toInt() != duetData.value.params.extrFactor.firstOrNull()?.toInt()) {
-                                    duetController.setExtrudeFactorOverride(it.toInt())
+                        labeledSlider(0, 200) {
+                            prefWidth = 300.0
+                            extrudeFactor.onChange { it?.let { this.value = it } }
+                            valueChangingProperty().onChange {
+                                if (!it) {
+                                    val intValue = value.roundToInt()
+                                    value = intValue.toDouble()
+                                    if (intValue != duetData.value.params.extrFactors.firstOrNull()?.toInt()) {
+                                        duetController.setExtrudeFactorOverride(intValue)
+                                    }
                                 }
                             }
                         }
