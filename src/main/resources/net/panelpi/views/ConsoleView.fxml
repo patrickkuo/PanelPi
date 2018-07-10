@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
@@ -10,11 +11,25 @@
         <Insets top="10" left="10" right="10" bottom="10"/>
     </padding>
 
-    <TextField/>
+    <TextField fx:id="commandTextField" maxWidth="Infinity" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"
+               promptText="Send G-Code..." focusTraversable="false" maxHeight="Infinity"/>
 
-    <ListView GridPane.rowIndex="1"/>
+    <HBox GridPane.columnIndex="1" spacing="10" GridPane.hgrow="NEVER">
+        <Button fx:id="send" text="Send" styleClass="primary" style="-fx-padding: 5 14 5 14" focusTraversable="false"
+                alignment="BASELINE_CENTER">
+            <graphic>
+                <FontAwesomeIconView glyphName="PAPER_PLANE" style="-glyph-size: 15px"/>
+            </graphic>
+        </Button>
+        <Button fx:id="clear" text="Clear Log" style="-fx-padding: 6 14 6 14" focusTraversable="false"
+                alignment="BASELINE_CENTER">
+            <graphic>
+                <FontAwesomeIconView glyphName="TRASH_ALT" style="-glyph-size: 18px"/>
+            </graphic>
+        </Button>
+    </HBox>
 
-    <GridPane GridPane.columnIndex="1" GridPane.rowSpan="2">
-        <Button/>
-    </GridPane>
+    <ListView fx:id="console" GridPane.rowIndex="1" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"/>
+    <FlowPane GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="buttonsPane" vgap="15" hgap="10"
+              GridPane.hgrow="NEVER" GridPane.halignment="CENTER" prefWidth="-Infinity"/>
 </GridPane>

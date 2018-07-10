@@ -1,6 +1,7 @@
 package net.panelpi.models
 
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class DuetData(val status: Status = Status.X,
                     private val coords: Coordinates = Coordinates(),
@@ -70,6 +71,14 @@ data class SDFile(override val fileName: String,
     val layerHeights: Pair<Double, Double> = Pair(firstLayerHeight, layerHeight)
 }
 
+data class ConsoleMessage(val messageType: MessageType, val timestamp: LocalTime = LocalTime.now(), val message: String? = null, val commands: List<String>? = null)
+
+enum class MessageType {
+    COMMAND,
+    INFO,
+    WARNING,
+    ERROR
+}
 
 enum class Status(private val value: String, val color: String) {
     I("Idle", "SILVER"),

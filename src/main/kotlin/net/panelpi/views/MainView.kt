@@ -31,6 +31,7 @@ class MainView : View() {
     private val controlView: ControlView by inject()
     private val settingView: SettingView by inject()
     private val comingSoon: ComingSoonView by inject()
+    private val consoleView: ConsoleView by inject()
     private val fileView: FileView by inject()
 
     init {
@@ -45,7 +46,7 @@ class MainView : View() {
         val allButton = mapOf(
                 statusButton to statusView,
                 controlButton to controlView,
-                consoleButton to comingSoon,
+                consoleButton to consoleView,
                 fileButton to fileView,
                 settingButton to settingView)
 
@@ -67,8 +68,6 @@ class MainView : View() {
         }
 
         // Emergency stop button.
-        stop.setOnAction {
-            duetController.emergencyStop()
-        }
+        stop.setOnAction { duetController.emergencyStop() }
     }
 }

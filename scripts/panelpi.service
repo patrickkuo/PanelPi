@@ -1,0 +1,12 @@
+[Unit]
+Description=Panel Pi
+After=network.target
+
+[Service]
+ExecStart=/home/pi/panelPi/panelPi.sh
+Type=simple
+PIDFile=/var/spool/panelpi/pid/master.pid
+User=root
+
+[Install]
+WantedBy=multi-user.target

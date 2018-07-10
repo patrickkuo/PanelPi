@@ -148,3 +148,23 @@
 .slider > .thumb {
     -fx-background-color: #428bca;
 }
+
+.console-info.list-cell:filled {
+    -fx-background-color: linear-gradient(to bottom, #dfefd8, #c8e1bd);
+}
+
+.console-info .label {
+    -fx-text-fill: #417540;
+    -fx-font-size: 14
+}
+
+
+.console-command.list-cell:filled {
+    -fx-background-color: linear-gradient(to bottom, #daecf7, #bbdff0);
+}
+
+.console-command .label {
+    -fx-text-fill: #35718e;
+    -fx-font-size: 14
+}
+

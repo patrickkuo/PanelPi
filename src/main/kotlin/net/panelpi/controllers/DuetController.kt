@@ -2,6 +2,8 @@ package net.panelpi.controllers
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 import mu.KLogging
 import net.panelpi.duetwifi.DuetWifi
 import net.panelpi.map
@@ -35,9 +37,12 @@ class DuetController : Controller() {
 
     private val statusObservable = data.map { it.status }
 
+    val console: ObservableList<ConsoleMessage> = FXCollections.observableArrayList<ConsoleMessage>()
+
     init {
         runAsync {
             val status = duet.sendCmd("M408 S3", resultTimeout = 5000).toJson()
+            console.add(0, ConsoleMessage(MessageType.INFO, message = "Connection established!"))
             Pair(status, getFile())
         }.ui { (status, currentFile) ->
             status?.let { jsonDuetData.set(jsonDuetData.value + it) }
@@ -62,6 +67,12 @@ class DuetController : Controller() {
         }
     }
 
+    fun sendCmd(vararg cmd: String, resultTimeout: Long = 0): String {
+        // Hacks to remove ACK message
+        console.add(0, ConsoleMessage(MessageType.COMMAND, commands = cmd.asList().filterNot { it.startsWith("M118") }))
+        return duet.sendCmd(*cmd, resultTimeout = resultTimeout)
+    }
+
     private fun getSdData(folder: String = "gcodes"): SDFolder? {
         return duet.sendCmd("M20 S2 P/$folder", resultTimeout = 5000).toJson()?.parseAs<JsonSDFolder>()?.files?.sorted()?.mapNotNull {
             if (it.startsWith("*")) {
@@ -81,16 +92,16 @@ class DuetController : Controller() {
     }
 
     fun moveAxis(axisName: String, amount: Double, speed: Int = 6000) {
-        duet.sendCmd("M120", "G91", "G1 $axisName$amount F$speed", "M121")
+        sendCmd("M120", "G91", "G1 $axisName$amount F$speed", "M121")
     }
 
     fun extrude(amount: Double, feedRate: Int) {
-        duet.sendCmd("M120", "M83", "G1 E$amount F${feedRate * 60}", "M121")
+        sendCmd("M120", "M83", "G1 E$amount F${feedRate * 60}", "M121")
     }
 
     fun atxPower(on: Boolean = true) {
         if (data.value.params.atxPower != on) {
-            duet.sendCmd(if (on) "M80" else "M81")
+            sendCmd(if (on) "M80" else "M81")
         }
     }
 
@@ -99,62 +110,62 @@ class DuetController : Controller() {
     }
 
     fun bedCompensation() {
-        duet.sendCmd("G32", ACK, resultTimeout = 60000)
+        sendCmd("G32", ACK, resultTimeout = 60000)
     }
 
     fun gridCompensation() {
-        duet.sendCmd("G29", ACK, resultTimeout = 60000)
+        sendCmd("G29", ACK, resultTimeout = 60000)
     }
 
     fun homeAxis(axisName: String? = null) {
-        duet.sendCmd(axisName?.let { "G28 $it" } ?: "G28", ACK, resultTimeout = 60000)
+        sendCmd(axisName?.let { "G28 $it" } ?: "G28", ACK, resultTimeout = 60000)
     }
 
     fun setBedTemperature(temperature: Int) {
-        duet.sendCmd("M140 S$temperature")
+        sendCmd("M140 S$temperature")
     }
 
     fun setToolTemperature(tool: Int, temperature: Int, standby: Boolean = false) {
-        duet.sendCmd("G10 P$tool ${if (standby) "R" else "S"}$temperature")
+        sendCmd("G10 P$tool ${if (standby) "R" else "S"}$temperature")
     }
 
     fun emergencyStop() {
-        duet.sendCmd("M112", "M999")
+        sendCmd("M112", "M999")
     }
 
     fun selectFileAndPrint(fileName: String) {
-        duet.sendCmd("M32 $fileName")
+        sendCmd("M32 $fileName")
     }
 
     fun resumePrint() {
-        duet.sendCmd("M24")
+        sendCmd("M24")
     }
 
     fun pausePrint() {
-        duet.sendCmd("M25")
+        sendCmd("M25")
     }
 
     fun stopPrint() {
-        duet.sendCmd("M0")
+        sendCmd("M0")
     }
 
     fun setSpeedFactorOverride(percent: Int) {
-        duet.sendCmd("M220 S$percent")
+        sendCmd("M220 S$percent")
     }
 
     fun setExtrudeFactorOverride(percent: Int) {
-        duet.sendCmd("M221 D0 S$percent")
+        sendCmd("M221 D0 S$percent")
     }
 
     fun setFanSpeed(percent: Int) {
-        duet.sendCmd("M106 S${percent.toDouble() / 100}")
+        sendCmd("M106 S${percent.toDouble() / 100}")
     }
 
     fun babyStepping(up: Boolean) {
         if (up) {
-            duet.sendCmd("M290 S0.05")
+            sendCmd("M290 S0.05")
         } else {
-            duet.sendCmd("M290 S-0.05")
+            sendCmd("M290 S-0.05")
         }
     }
 
