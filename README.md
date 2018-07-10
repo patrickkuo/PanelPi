@@ -30,6 +30,8 @@ The main motivation of starting this project is I want a control panel for my Du
 ![alt tag](images/statusView.png "Status View")<!-- .element height="50%" width="50%" -->
 ### File View
 ![alt tag](images/fileView.png "File View")<!-- .element height="50%" width="50%" -->
+### Console View
+![alt tag](images/consoleView.png "File View")<!-- .element height="50%" width="50%" -->
 
 ## Setting up Panel Pi
 ### Prerequisite
@@ -81,8 +83,9 @@ The main motivation of starting this project is I want a control panel for my Du
 
 
 ## TODOs
-* Console view
+* Console view - command hint and validation
 * Stop mimicking duet web interface and optimise UI for small touchscreen 
+* Webcam support?
 * Multi-hotend/Tool support
 * More detailed step-by-step setup instructions
 * Splash screen

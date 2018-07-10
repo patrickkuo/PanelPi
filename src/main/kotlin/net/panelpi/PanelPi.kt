@@ -1,5 +1,7 @@
 package net.panelpi
 
+import javafx.stage.Stage
+import javafx.stage.StageStyle
 import mu.KLogging
 import net.panelpi.controllers.DuetController
 import net.panelpi.views.MainView
@@ -14,5 +16,10 @@ class PanelPiApp : App(MainView::class) {
             logger.error(e) { "Uncaught exception." }
             duetController.logDuetData()
         }
+    }
+
+    override fun start(stage: Stage) {
+        stage.initStyle(StageStyle.UNDECORATED)
+        super.start(stage)
     }
 }
