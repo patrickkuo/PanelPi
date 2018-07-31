@@ -2,7 +2,7 @@ package net.panelpi.views
 
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
-import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.Node
 import javafx.scene.Parent
@@ -18,6 +18,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 class StatusView : View() {
@@ -43,8 +44,8 @@ class StatusView : View() {
     private val timeLeftFileTime: Label by fxid()
     private val timeLeftLayerTime: Label by fxid()
 
-    private val currentLayerTime = duetData.map { it.currentLayerTime }
-    private val lastLayerTime = SimpleDoubleProperty()
+    private val currentLayerTime = duetData.map { it.currentLayer to it.currentLayerTime }
+    private val lastLayerTime = SimpleObjectProperty<Pair<Int, Double?>>()
 
     private val offsetAmount: Label by fxid()
 
@@ -74,21 +75,24 @@ class StatusView : View() {
         progressBar.bind(duetData.map { it.fractionPrinted / 100 })
         progressLabel.bind(duetData.map { "${it.fractionPrinted}%" })
 
-        timeLeftFilament.bind(duetData.map { it.timesLeft?.filament?.nullIfZero() ?: "n/a" })
-        timeLeftFile.bind(duetData.map { it.timesLeft?.file?.nullIfZero() ?: "n/a" })
-        timeLeftLayer.bind(duetData.map { it.timesLeft?.layer?.nullIfZero() ?: "n/a" })
+        timeLeftFilament.bind(duetData.map { it.timesLeft?.filament?.nullIfZero()?.toTimeDuration() ?: "n/a" })
+        timeLeftFile.bind(duetData.map { it.timesLeft?.file?.nullIfZero()?.toTimeDuration() ?: "n/a" })
+        timeLeftLayer.bind(duetData.map { it.timesLeft?.layer?.nullIfZero()?.toTimeDuration() ?: "n/a" })
 
-        warmUp.bind(duetData.map { it.warmUpDuration?.nullIfZero() ?: "n/a" })
-        currentLayer.bind(currentLayerTime.map { it?.nullIfZero() ?: "n/a" })
+        warmUp.bind(duetData.map { it.warmUpDuration?.toTimeDuration() ?: "n/a" })
+        currentLayer.bind(currentLayerTime.map { it.second?.toTimeDuration() ?: "n/a" })
+        currentLayerTime.addListener { _, oldValue, newValue ->
+            if (newValue?.first != oldValue?.first) {
+                oldValue?.let(lastLayerTime::set)
+            }
+        }
 
-        currentLayerTime.onChange { it?.let(lastLayerTime::set) }
+        lastLayer.bind(lastLayerTime.map { it?.second?.toTimeDuration() ?: "n/a" })
+        printDuration.bind(duetData.map { it.printDuration?.toTimeDuration() ?: "n/a" })
 
-        lastLayer.bind(lastLayerTime.map { it?.toDouble()?.nullIfZero() ?: "n/a" })
-        printDuration.bind(duetData.map { it.printDuration?.nullIfZero() ?: "n/a" })
-
-        timeLeftFilamentTime.bind(duetData.map { it.timesLeft?.filament?.nullIfZero()?.toTime() ?: "n/a" })
-        timeLeftFileTime.bind(duetData.map { it.timesLeft?.file?.nullIfZero()?.toTime() ?: "n/a" })
-        timeLeftLayerTime.bind(duetData.map { it.timesLeft?.filament?.nullIfZero()?.toTime() ?: "n/a" })
+        timeLeftFilamentTime.bind(duetData.map { it.timesLeft?.filament?.toTime() ?: "n/a" })
+        timeLeftFileTime.bind(duetData.map { it.timesLeft?.file?.toTime() ?: "n/a" })
+        timeLeftLayerTime.bind(duetData.map { it.timesLeft?.layer?.toTime() ?: "n/a" })
 
         offsetAmount.bind(duetData.map { it.params.babystep })
 
@@ -240,10 +244,12 @@ class StatusView : View() {
 
     private fun Double.nullIfZero() = if (this == 0.0) null else this
 
-    private fun Double.toTime() = LocalTime.now()
-            .plusSeconds(toLong())
-            .truncatedTo(ChronoUnit.SECONDS)
-            .format(DateTimeFormatter.ISO_LOCAL_TIME)
+    private fun Double?.toTime() = this?.nullIfZero()?.let {
+        LocalTime.now()
+                .plusSeconds(it.toLong())
+                .truncatedTo(ChronoUnit.SECONDS)
+                .format(DateTimeFormatter.ISO_LOCAL_TIME)
+    }
 
     private fun Label.withIcon(icon: FontAwesomeIcon): Node {
         val iconView = FontAwesomeIconView(icon).apply {
@@ -256,5 +262,15 @@ class StatusView : View() {
             maxWidth = Double.MAX_VALUE
         }
     }
+
+    private fun Double?.toTimeDuration() = this?.nullIfZero()?.let {
+        val daySecond = 24 * 60 * 60
+        val day = (it / daySecond).toInt()
+        val time = LocalTime.ofSecondOfDay(it.roundToLong() % daySecond)
+        "${day.nonZero("d")} ${time.hour.nonZero("h")} ${time.minute.nonZero("m")} ${time.second}s"
+    }
+
+    private fun Int.nonZero(prefix: String) = if (this > 0) this.toString() + prefix else ""
+
 
 }

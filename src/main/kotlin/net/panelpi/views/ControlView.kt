@@ -59,7 +59,6 @@ class ControlView : View() {
     private val toolStandbyTemp: ComboBox<Int> by fxid()
 
     private val fanSliderBox: VBox by fxid()
-    private val fanSliderAmount: Label by fxid()
 
     // Observable value for listening will need to be declared here, or else listener will get GCed and won't trigger event.
     private val coords = duetData.map { it.axes }

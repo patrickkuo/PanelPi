@@ -30,7 +30,6 @@ class MainView : View() {
     private val statusView: StatusView by inject()
     private val controlView: ControlView by inject()
     private val settingView: SettingView by inject()
-    private val comingSoon: ComingSoonView by inject()
     private val consoleView: ConsoleView by inject()
     private val fileView: FileView by inject()
 

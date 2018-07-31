@@ -14,14 +14,15 @@ data class DuetData(val status: Status = Status.X,
                     val fractionPrinted: Double = 0.0,
                     val warmUpDuration: Double? = null,
                     val currentLayerTime: Double? = null,
+                    val currentLayer: Int = 0,
                     val printDuration: Double? = null,
                     private val coldExtrudeTemp: Int = Int.MAX_VALUE,
                     private val coldRetractTemp: Int = Int.MAX_VALUE,
                     private val currentTool: Int = 0
 ) {
     val axes = coords.axes
-    val isExtrudeEnable = temps.current.getOrNull(currentTool)?.let { it > coldExtrudeTemp } ?: false
-    val isRetractEnable = temps.current.getOrNull(currentTool)?.let { it > coldRetractTemp } ?: false
+    val isExtrudeEnable get() = temps.current.getOrNull(currentTool)?.let { it > coldExtrudeTemp } ?: false
+    val isRetractEnable get() = temps.current.getOrNull(currentTool)?.let { it > coldRetractTemp } ?: false
 }
 
 data class Coordinates(private val axesHomed: List<Boolean> = emptyList(), private val xyz: List<Double> = emptyList()) {

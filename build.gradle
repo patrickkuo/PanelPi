@@ -96,7 +96,13 @@ task runOnPi {
         ssh.run {
             session(remotes.pi) {
                 execute "sudo killall java || true"
-                execute "sudo java -Dprism.order=sw -Djava.ext.dirs=/home/pi/jdk1.8.0_92/jre/lib/ext/ -jar panelPi/panelPi.jar"
+                execute "sudo java " +
+                        "-Dprism.order=es2,es1,sw,j2d " +
+                        "-Dsun.java2d.opengl=true " +
+                        "-Dprism.vsync=false " +
+                        "-Dprism.forceGPU=true " +
+                        "-Djava.ext.dirs=/home/pi/jdk1.8.0_92/jre/lib/ext/ " +
+                        "-jar panelPi/panelPi.jar"
             }
         }
     }
