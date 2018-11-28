@@ -21,8 +21,8 @@ data class DuetData(val status: Status = Status.X,
                     private val currentTool: Int = 0
 ) {
     val axes = coords.axes
-    val isExtrudeEnable get() = temps.current.getOrNull(currentTool)?.let { it > coldExtrudeTemp } ?: false
-    val isRetractEnable get() = temps.current.getOrNull(currentTool)?.let { it > coldRetractTemp } ?: false
+    val isExtrudeEnable get() = temps.current.firstOrNull()?.let { it > coldExtrudeTemp } ?: false
+    val isRetractEnable get() = temps.current.firstOrNull()?.let { it > coldRetractTemp } ?: false
 }
 
 data class Coordinates(private val axesHomed: List<Boolean> = emptyList(), private val xyz: List<Double> = emptyList()) {

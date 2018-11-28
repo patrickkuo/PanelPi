@@ -5,6 +5,12 @@
 _Work In Progress_
 
 ## Releases
+
+### Beta 2 
+28/11/2018 - Beta 2 release!  
+Releasing latest binary from master branch, include working GCode view and some bug fixes. 
+Not much development recently, will spend more time on it during Christmas holidays.
+
 ### Beta 1 
 08/07/2018 - Beta 1 release!  
 PanelPi is now in a usable state, however, only printer with XYZ axes and 1 hotend is supported, it was tested on a Core XY setup with a single hotend. 
